@@ -1,0 +1,2697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Gaming Tournament</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
+    <link rel="stylesheet" href="admin.css">
+    
+</head>
+<body>
+
+    <div id="adminLoader">
+        <div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div>
+    </div>
+
+    <!-- Login / Setup Area -->
+    <div id="auth-container">
+        <div id="admin-setup-section" style="display: none;">
+            <div class="container login-container"> <div class="card shadow"> <div class="card-body p-4"> <h2 class="card-title text-center mb-4">Admin Account Setup</h2> <p class="text-muted text-center small mb-3">Create the primary admin account.</p> <form id="adminSetupForm"> <div class="mb-3"> <label for="setupEmail" class="form-label">Admin Email</label> <input type="email" class="form-control" id="setupEmail" required> </div> <div class="mb-3"> <label for="setupPassword" class="form-label">Admin Password (min 6 chars)</label> <input type="password" class="form-control" id="setupPassword" required minlength="6"> </div> <div id="adminSetupStatus" class="mt-3"></div> <div class="d-grid"> <button type="submit" class="btn btn-success">Create Admin Account</button> </div> </form> </div> </div> </div>
+        </div>
+        <div id="admin-login-section" style="display: none;">
+            <div class="admin-login-container">
+                <div class="admin-login-card">
+                    <div class="admin-login-header">
+                        <div class="admin-logo">
+                            <i class="bi bi-shield-lock-fill"></i>
+                        </div>
+                        <h1 class="admin-title">Admin Login</h1>
+                        <p class="admin-subtitle">Access your gaming platform dashboard</p>
+                    </div>
+                    
+                    <form id="adminLoginForm" class="admin-login-form">
+                        <div class="form-group">
+                            <label for="adminEmail" class="form-label">
+                                <i class="bi bi-envelope"></i>
+                                Email Address
+                            </label>
+                            <input type="email" class="form-control admin-input" id="adminEmail" placeholder="Enter your email" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="adminPassword" class="form-label">
+                                <i class="bi bi-lock"></i>
+                                Password
+                            </label>
+                            <div class="password-input-wrapper">
+                                <input type="password" class="form-control admin-input" id="adminPassword" placeholder="Enter your password" required>
+                                <button type="button" class="password-toggle-btn" id="passwordToggleBtn">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="form-options">
+                            <label class="form-check">
+                                <input type="checkbox" class="form-check-input" id="rememberMe">
+                                <span class="form-check-label">Remember me</span>
+                            </label>
+                            <button type="button" class="forgot-password-btn" id="forgotPasswordBtn">
+                                Forgot Password?
+                            </button>
+                        </div>
+                        
+                        <div id="adminLoginStatus" class="login-status"></div>
+                        
+                        <button type="submit" class="admin-login-btn" id="adminLoginSubmitBtn">
+                            <span class="btn-text">Sign In</span>
+                            <span class="btn-loader" style="display: none;">
+                                <div class="spinner-border spinner-border-sm" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </span>
+                        </button>
+                    </form>
+                    
+                    <div class="admin-login-footer">
+                        <p class="security-note">
+                            <i class="bi bi-shield-check"></i>
+                            Secure admin access with enterprise-grade security
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Forgot Password Modal -->
+    <div class="modal fade" id="forgotPasswordModal" tabindex="-1" aria-labelledby="forgotPasswordModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="forgotPasswordModalLabel">
+                        <i class="bi bi-key"></i>
+                        Reset Password
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted mb-3">
+                        Enter your email address and we'll send you a link to reset your password.
+                    </p>
+                    <div class="mb-3">
+                        <label for="forgotPasswordEmail" class="form-label">Email Address</label>
+                        <input type="email" class="form-control admin-input" id="forgotPasswordEmail" placeholder="Enter your email">
+                    </div>
+                    <div id="forgotPasswordStatus" class="mb-3"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="sendResetEmailBtn">
+                        <span class="btn-text">Send Reset Email</span>
+                        <span class="btn-loader" style="display: none;">
+                            <div class="spinner-border spinner-border-sm" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Admin Panel Area -->
+    <div id="admin-main-area" style="display: none;">
+        <header class="app-header">
+            <div class="header-left">
+                <button class="menu-toggle-btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#adminSidebar" aria-controls="adminSidebar">
+                    <i class="bi bi-list"></i>
+                </button>
+                <!-- Challenge Logo -->
+                <div class="challenge-logo">
+                    <svg width="35" height="35" viewBox="0 0 35 35" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="35" height="35" rx="17.5" fill="#1E293B"/>
+                        <path d="M10 12L17.5 8L25 12V20L17.5 24L10 20V12Z" fill="#94A3B8"/>
+                        <path d="M17.5 8L17.5 24" stroke="#E2E8F0" stroke-width="1.5"/>
+                        <path d="M10 12L25 12" stroke="#E2E8F0" stroke-width="1.5"/>
+                        <path d="M10 20L25 20" stroke="#E2E8F0" stroke-width="1.5"/>
+                        <circle cx="17.5" cy="16" r="2" fill="#F59E0B"/>
+                        <path d="M15 14L20 18M20 14L15 18" stroke="#1E293B" stroke-width="1" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <h1 class="header-title ms-1" id="adminPageTitle">Dashboard</h1>
+            </div>
+            <div class="header-right">
+                <span class="admin-email-header" id="adminUserEmailShort"></span>
+                <button class="btn btn-sm btn-outline-danger" id="adminLogoutBtnHeader"><i class="bi bi-box-arrow-right"></i> Logout</button>
+            </div>
+        </header>
+
+        <div class="offcanvas offcanvas-start" tabindex="-1" id="adminSidebar" aria-labelledby="adminSidebarLabel">
+            <div class="offcanvas-header">
+                <div class="sidebar-header-content">
+                    <div class="challenge-logo-sidebar">
+                        <svg width="28" height="28" viewBox="0 0 35 35" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect width="35" height="35" rx="17.5" fill="#1E293B"/>
+                            <path d="M10 12L17.5 8L25 12V20L17.5 24L10 20V12Z" fill="#94A3B8"/>
+                            <path d="M17.5 8L17.5 24" stroke="#E2E8F0" stroke-width="1.5"/>
+                            <path d="M10 12L25 12" stroke="#E2E8F0" stroke-width="1.5"/>
+                            <path d="M10 20L25 20" stroke="#E2E8F0" stroke-width="1.5"/>
+                            <circle cx="17.5" cy="16" r="2" fill="#F59E0B"/>
+                            <path d="M15 14L20 18M20 14L15 18" stroke="#1E293B" stroke-width="1" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <h5 class="offcanvas-title" id="adminSidebarLabel">Admin Menu</h5>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body">
+                <ul class="nav flex-column">
+                     <li class="nav-item"> <a class="nav-link active" href="#" data-section="dashboard-section"><i class="bi bi-speedometer2"></i> Dashboard</a> </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-section="announcements-section">
+                            <i class="bi bi-megaphone"></i> Announcements
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-section="games-section">
+                            <i class="bi bi-controller"></i> Games
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-section="challenges-section">
+                            <i class="bi bi-sword"></i> Challenge Management
+                        </a>
+                    </li>
+                    <li class="nav-item"> <a class="nav-link" href="#" data-section="promotions-section"><i class="bi bi-images"></i> Promotions</a> </li>
+                    <li class="nav-item"> <a class="nav-link" href="#" data-section="tournaments-section"><i class="bi bi-trophy"></i> Tournaments</a> </li>
+                    <li class="nav-item"> <a class="nav-link" href="#" data-section="users-section"><i class="bi bi-people"></i> Users</a> </li>
+                     <li class="nav-item"> <a class="nav-link" href="#" data-section="transactions-section"><i class="bi bi-receipt"></i> Transactions</a> </li>
+                    <li class="nav-item"> <a class="nav-link" href="#" data-section="deposits-section"><i class="bi bi-wallet-fill"></i> Deposits <span class="badge bg-warning ms-1" id="pendingDepositCountBadge" style="display: none;">0</span></a> </li>
+                <li class="nav-item"> <a class="nav-link" href="#" data-section="withdrawals-section"><i class="bi bi-cash-coin"></i> Withdrawals <span class="badge bg-danger ms-1" id="pendingWithdrawalCountBadge" style="display: none;">0</span></a> </li>
+                    <li class="nav-item"> <a class="nav-link" href="#" data-section="referral-section"><i class="bi bi-person-plus"></i> Referral</a> </li>
+                    <li class="nav-item"> <a class="nav-link" href="#" data-section="support-section"><i class="bi bi-headset"></i> Support Tickets</a> </li>
+                    <li class="nav-item"> <a class="nav-link" href="#" data-section="leaderboard-section"><i class="bi bi-award"></i> Leaderboard</a> </li>
+                    <li class="nav-item"> <a class="nav-link" href="#" data-section="analytics-section"><i class="bi bi-graph-up"></i> Analytics</a> </li>
+                    <li class="nav-item"> <a class="nav-link" href="#" data-section="settings-section"><i class="bi bi-gear"></i> Settings</a> </li>
+                </ul>
+
+            </div>
+        </div>
+
+        <main class="main-content" id="adminMainContent">
+            <!-- Dashboard Section -->
+            <section id="dashboard-section" class="section active">
+                <div class="dashboard-header mb-4">
+                    <div class="header-content">
+                        <h2 class="section-title mb-2">Dashboard Overview</h2>
+                        <p class="section-subtitle text-muted">Monitor your gaming platform's key metrics</p>
+                    </div>
+                </div>
+                
+                <div class="dashboard-grid">
+                    <!-- User Metrics -->
+                    <div class="dashboard-card primary-card">
+                        <div class="card-icon">
+                            <i class="bi bi-people-fill"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3 class="card-title">Total Users</h3>
+                            <div class="card-value" id="statTotalUsers">--</div>
+                            <div class="card-subtitle">Registered users</div>
+                        </div>
+                    </div>
+
+                    <!-- Tournament Metrics -->
+                    <div class="dashboard-card info-card">
+                        <div class="card-icon">
+                            <i class="bi bi-trophy-fill"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3 class="card-title">Active Tournaments</h3>
+                            <div class="card-value" id="statActiveTournaments">--</div>
+                            <div class="card-subtitle">Upcoming & ongoing</div>
+                        </div>
+                    </div>
+
+                    <!-- Withdrawal Metrics -->
+                    <div class="dashboard-card warning-card">
+                        <div class="card-icon">
+                            <i class="bi bi-hourglass-split"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3 class="card-title">Pending Withdrawals</h3>
+                            <div class="card-value" id="statPendingWithdrawals">--</div>
+                            <div class="card-subtitle">Awaiting approval</div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card success-card">
+                        <div class="card-icon">
+                            <i class="bi bi-check-circle-fill"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3 class="card-title">Completed Withdrawals</h3>
+                            <div class="card-value" id="statCompletedWithdrawals">--</div>
+                            <div class="card-subtitle">Successfully processed</div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card danger-card">
+                        <div class="card-icon">
+                            <i class="bi bi-x-octagon-fill"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3 class="card-title">Rejected Withdrawals</h3>
+                            <div class="card-value" id="statRejectedWithdrawals">--</div>
+                            <div class="card-subtitle">Declined requests</div>
+                        </div>
+                    </div>
+
+                    <!-- Content Metrics -->
+                    <div class="dashboard-card secondary-card">
+                        <div class="card-icon">
+                            <i class="bi bi-controller"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3 class="card-title">Total Games</h3>
+                            <div class="card-value" id="statTotalGames">--</div>
+                            <div class="card-subtitle">Available games</div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card secondary-card">
+                        <div class="card-icon">
+                            <i class="bi bi-images"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3 class="card-title">Total Promotions</h3>
+                            <div class="card-value" id="statTotalPromotions">--</div>
+                            <div class="card-subtitle">Active promotions</div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card secondary-card">
+                        <div class="card-icon">
+                            <i class="bi bi-flag-fill"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3 class="card-title">Finished Tournaments</h3>
+                            <div class="card-value" id="statFinishedTournaments">--</div>
+                            <div class="card-subtitle">Completed events</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="dashboardStatus" class="mt-4"></div>
+            </section>
+
+            <!-- Games Section -->
+            <section id="games-section" class="section">
+                <div class="games-header mb-4">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                        <div class="header-content">
+                            <h2 class="section-title mb-2">
+                                <i class="bi bi-controller"></i> Manage Games
+                            </h2>
+                            <p class="section-subtitle text-muted">Configure games and enable challenge mode</p>
+                        </div>
+                        <div class="header-actions">
+                            <button class="btn btn-primary" id="addGameBtn">
+                                <i class="bi bi-plus-circle"></i> Add Game
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Games Status -->
+                <div id="gamesStatus" class="mb-3"></div>
+                
+                <!-- Games Grid -->
+                <div class="games-container">
+                    <div class="games-grid" id="gamesGrid">
+                        <!-- Loading placeholders -->
+                        <div class="game-card loading-placeholder">
+                            <div class="placeholder w-100 h-100"></div>
+                        </div>
+                        <div class="game-card loading-placeholder">
+                            <div class="placeholder w-100 h-100"></div>
+                        </div>
+                        <div class="game-card loading-placeholder">
+                            <div class="placeholder w-100 h-100"></div>
+                        </div>
+                        <div class="game-card loading-placeholder">
+                            <div class="placeholder w-100 h-100"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Add/Edit Game Modal -->
+            <div class="modal fade" id="gameModal" tabindex="-1">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content modal-modern">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="gameModalTitle">Add New Game</h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="gameForm">
+                                <input type="hidden" id="gameEditId">
+                                <div class="row g-3">
+                                    <div class="col-12">
+                                        <label for="gameName" class="form-label">Game Name</label>
+                                        <input type="text" class="form-control" id="gameName" required placeholder="Enter game name">
+                                    </div>
+                                    <div class="col-12">
+                                        <label for="gameImageFile" class="form-label">Game Logo/Banner</label>
+                                        <div class="input-group">
+                                            <input type="file" class="form-control" id="gameImageFile" accept="image/*">
+                                            <button class="btn btn-outline-secondary" type="button" id="uploadImageBtn">
+                                                <i class="bi bi-upload"></i> Upload
+                                            </button>
+                                        </div>
+                                        <small class="text-muted">Upload image (PNG, JPG, WebP) or use direct URL below</small>
+                                        <div id="imageUploadStatus" class="mt-2"></div>
+                                    </div>
+                                    <div class="col-12">
+                                        <label for="gameLogo" class="form-label">Or Direct Image URL</label>
+                                        <input type="url" class="form-control" id="gameLogo" placeholder="https://example.com/game-logo.png">
+                                        <small class="text-muted">Direct image URL if you prefer to use an existing image</small>
+                                    </div>
+                                    <div class="col-12">
+                                        <div id="gameImagePreview" class="mt-2" style="display: none;">
+                                            <img id="previewImage" src="" alt="Game Preview" class="img-thumbnail" style="max-width: 200px; max-height: 150px;">
+                                            <button type="button" class="btn btn-sm btn-outline-danger ms-2" id="removeImageBtn">
+                                                <i class="bi bi-trash"></i> Remove
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="challengeModeEnabled">
+                                            <label class="form-check-label" for="challengeModeEnabled">
+                                                <strong>Enable Challenge Mode</strong>
+                                            </label>
+                                        </div>
+                                        <small class="text-muted">If enabled, users can create and accept challenges for this game</small>
+                                    </div>
+                                    
+                                    <!-- Challenge Settings (only visible when enabled) -->
+                                    <div id="challengeSettings" class="col-12" style="display: none;">
+                                        <div class="card bg-light">
+                                            <div class="card-body">
+                                                <h6 class="card-title mb-3">
+                                                    <i class="bi bi-gear"></i> Challenge Settings
+                                                </h6>
+                                                <div class="row g-3">
+                                                    <div class="col-md-6">
+                                                        <label for="minEntryFee" class="form-label">Minimum Entry Fee (₹)</label>
+                                                        <input type="number" class="form-control" id="minEntryFee" min="10" step="10" value="50">
+                                                        <small class="text-muted">Users cannot set entry fee below this amount</small>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <label for="commissionPercent" class="form-label">Commission (%)</label>
+                                                        <input type="number" class="form-control" id="commissionPercent" min="5" max="50" step="5" value="20">
+                                                        <small class="text-muted">Platform commission from total prize pool</small>
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <div class="alert alert-info">
+                                                            <strong>Prize Pool Formula:</strong><br>
+                                                            Prize Pool = (Entry Fee × 2) - Commission<br>
+                                                            Commission = (Entry Fee × 2 × Commission%) / 100<br>
+                                                            <strong>Example:</strong> ₹50 entry fee with 20% commission = ₹80 prize pool
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="gameStatus" class="mt-3"></div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="button" class="btn btn-primary" id="saveGameBtn">Add Game</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Promotions Section -->
+            <section id="promotions-section" class="section">
+                <div class="promotions-header mb-4">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                        <div class="header-content">
+                            <h2 class="section-title mb-2">Manage Promotions</h2>
+                            <p class="section-subtitle text-muted">Create and manage promotional banners and offers</p>
+                </div>
+                        <div class="header-actions">
+                            <button class="btn btn-primary add-promotion-btn" data-bs-toggle="modal" data-bs-target="#promotionModal" id="addNewPromotionBtn">
+                                <i class="bi bi-plus-circle"></i>
+                                <span>Add Promotion</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="promotionsStatus" class="mb-3"></div>
+                
+                <div class="promotions-container">
+                    <div class="promotions-grid" id="promotionsTableBody">
+                        <!-- Loading placeholders -->
+                        <div class="promotion-card loading-placeholder">
+                            <div class="promotion-image-placeholder"></div>
+                            <div class="promotion-content-placeholder">
+                                <div class="title-placeholder"></div>
+                                <div class="link-placeholder"></div>
+                            </div>
+                        </div>
+                        <div class="promotion-card loading-placeholder">
+                            <div class="promotion-image-placeholder"></div>
+                            <div class="promotion-content-placeholder">
+                                <div class="title-placeholder"></div>
+                                <div class="link-placeholder"></div>
+                            </div>
+                        </div>
+                        <div class="promotion-card loading-placeholder">
+                            <div class="promotion-image-placeholder"></div>
+                            <div class="promotion-content-placeholder">
+                                <div class="title-placeholder"></div>
+                                <div class="link-placeholder"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+             </section>
+
+            <!-- Tournaments Section -->
+            <section id="tournaments-section" class="section">
+                <div class="tournaments-header mb-4">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                        <div class="header-content">
+                            <h2 class="section-title mb-2">Manage Tournaments</h2>
+                            <p class="section-subtitle text-muted">Create and manage gaming tournaments</p>
+                        </div>
+                        <div class="header-actions">
+                            <button class="btn btn-primary add-tournament-btn" data-bs-toggle="modal" data-bs-target="#addTournamentModal" id="addNewTournamentBtn">
+                                <i class="bi bi-plus-circle"></i>
+                                <span>Add Tournament</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="tournamentsStatus" class="mb-3"></div>
+                <div class="card mb-3">
+                  <div class="card-body">
+                    <div class="row g-2 align-items-end">
+                      <div class="col-md-3 col-6">
+                        <label class="form-label">Status</label>
+                        <select class="form-select" id="tournamentFilterStatus">
+                          <option value="">All</option>
+                          <option value="upcoming">Upcoming</option>
+                          <option value="ongoing">Ongoing</option>
+                          <option value="completed">Completed</option>
+                          <option value="result">Result</option>
+                          <option value="cancelled">Cancelled</option>
+                        </select>
+                      </div>
+                      <div class="col-md-3 col-6">
+                        <label class="form-label">Game</label>
+                        <select class="form-select" id="tournamentFilterGame">
+                          <option value="">All</option>
+                        </select>
+                      </div>
+                      <div class="col-md-4">
+                        <label class="form-label">Search</label>
+                        <input type="text" class="form-control" id="tournamentFilterSearch" placeholder="Search by name">
+                      </div>
+                      <div class="col-md-2">
+                        <button class="btn btn-secondary w-100" id="tournamentFilterReset"><i class="bi bi-x-circle"></i> Reset</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="tournaments-container">
+                    <div class="tournaments-grid" id="tournamentsTableBody">
+                        <!-- Loading placeholders -->
+                        <div class="tournament-card loading-placeholder">
+                            <div class="tournament-card-header">
+                                <div class="tournament-icon-placeholder"></div>
+                                <div class="tournament-info-placeholder">
+                                    <div class="name-placeholder"></div>
+                                    <div class="game-placeholder"></div>
+                                </div>
+                            </div>
+                            <div class="tournament-card-body">
+                                <div class="fee-placeholder"></div>
+                                <div class="prize-placeholder"></div>
+                            </div>
+                        </div>
+                        <div class="tournament-card loading-placeholder">
+                            <div class="tournament-card-header">
+                                <div class="tournament-icon-placeholder"></div>
+                                <div class="tournament-info-placeholder">
+                                    <div class="name-placeholder"></div>
+                                    <div class="game-placeholder"></div>
+                                </div>
+                            </div>
+                            <div class="tournament-card-body">
+                                <div class="fee-placeholder"></div>
+                                <div class="prize-placeholder"></div>
+                            </div>
+                        </div>
+                        <div class="tournament-card loading-placeholder">
+                            <div class="tournament-card-header">
+                                <div class="tournament-icon-placeholder"></div>
+                                <div class="tournament-info-placeholder">
+                                    <div class="name-placeholder"></div>
+                                    <div class="game-placeholder"></div>
+                                </div>
+                            </div>
+                            <div class="tournament-card-body">
+                                <div class="fee-placeholder"></div>
+                                <div class="prize-placeholder"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Users Section -->
+            <section id="users-section" class="section">
+                <div class="users-header mb-4">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                        <div class="header-content">
+                            <h2 class="section-title mb-2">Manage Users</h2>
+                            <p class="section-subtitle text-muted">View and manage all registered users</p>
+                        </div>
+                        <div class="header-actions d-flex gap-2">
+                            <div class="search-container">
+                                <div class="search-input-wrapper">
+                                    <i class="bi bi-search search-icon"></i>
+                                    <input type="search" class="form-control search-input" id="userSearchInput" placeholder="Search users...">
+                                </div>
+                            </div>
+                            <button class="btn btn-primary add-user-btn" data-bs-toggle="modal" data-bs-target="#addUserModal">
+                                <i class="bi bi-person-plus-fill"></i>
+                                <span>Add User</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="usersStatus" class="mb-3"></div>
+                
+                <div class="users-container">
+                    <div class="users-grid" id="usersTableBody">
+                        <!-- Loading placeholders -->
+                        <div class="user-card loading-placeholder">
+                            <div class="user-card-header">
+                                <div class="user-avatar-placeholder"></div>
+                                <div class="user-info-placeholder">
+                                    <div class="name-placeholder"></div>
+                                    <div class="email-placeholder"></div>
+                                </div>
+                            </div>
+                            <div class="user-card-body">
+                                <div class="balance-placeholder"></div>
+                                <div class="stats-placeholder"></div>
+                            </div>
+                        </div>
+                        <div class="user-card loading-placeholder">
+                            <div class="user-card-header">
+                                <div class="user-avatar-placeholder"></div>
+                                <div class="user-info-placeholder">
+                                    <div class="name-placeholder"></div>
+                                    <div class="email-placeholder"></div>
+                                </div>
+                            </div>
+                            <div class="user-card-body">
+                                <div class="balance-placeholder"></div>
+                                <div class="stats-placeholder"></div>
+                            </div>
+                        </div>
+                        <div class="user-card loading-placeholder">
+                            <div class="user-card-header">
+                                <div class="user-avatar-placeholder"></div>
+                                <div class="user-info-placeholder">
+                                    <div class="name-placeholder"></div>
+                                    <div class="email-placeholder"></div>
+                                </div>
+                            </div>
+                            <div class="user-card-body">
+                                <div class="balance-placeholder"></div>
+                                <div class="stats-placeholder"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Transactions Section -->
+            <section id="transactions-section" class="section">
+                <h2>User Transactions</h2>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row g-3 align-items-end mb-3">
+                            <div class="col-md-5">
+                                <label for="transactionUserSearchInput" class="form-label">Search User by Name, Email, or UID</label>
+                                <input type="search" class="form-control" id="transactionUserSearchInput" placeholder="Enter search term...">
+                            </div>
+                            <div class="col-md-2">
+                                <button class="btn btn-primary w-100" id="transactionSearchBtn"><i class="bi bi-search"></i> Search</button>
+                            </div>
+                        </div>
+                        <div id="transactionSearchResults" class="mb-3"></div>
+                        <div id="transactionsStatus"></div>
+
+                        <div id="transactionTableContainer" style="display: none;">
+                            <h3 class="fs-5 mb-3">Displaying transactions for: <strong id="selectedUserForTxDisplay"></strong></h3>
+                            <div class="table-responsive">
+                                <table class="table table-dark table-hover mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Timestamp</th>
+                                            <th>Type</th>
+                                            <th>Amount</th>
+                                            <th>Description</th>
+                                            <th>Balance After</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="transactionsTableBody">
+                                        <!-- Data will be loaded here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Withdrawals Section -->
+            <section id="withdrawals-section" class="section">
+                <div class="withdrawals-header mb-4">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                        <div class="header-content">
+                            <h2 class="section-title mb-2">Manage Withdrawals</h2>
+                            <p class="section-subtitle text-muted">Review and process user withdrawal requests</p>
+                        </div>
+                        <div class="header-stats">
+                            <div class="stat-item">
+                                <span class="stat-label">Pending</span>
+                                <span class="stat-value" id="pendingWithdrawalCount">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Today</span>
+                                <span class="stat-value" id="todayWithdrawalCount">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="withdrawalsStatus" class="mb-3"></div>
+                <div class="alert alert-info mb-3">
+                    <i class="bi bi-info-circle me-2"></i>
+                    <strong>New Withdrawal System:</strong> Amounts are now deducted from user's winning cash immediately when withdrawal is requested. 
+                    If rejected, the amount is automatically refunded. Look for the "Amount Deducted" badge on withdrawal cards.
+                </div>
+                <div class="withdrawals-container">
+                    <div class="withdrawals-tabs mb-4">
+                        <div class="nav nav-pills withdrawals-nav" id="withdrawalTabs" role="tablist">
+                            <button class="nav-link active" id="all-withdrawals-tab" data-bs-toggle="pill" data-bs-target="#allWithdrawalsTab" type="button" role="tab">
+                                <i class="bi bi-list-ul"></i>
+                                <span>All</span>
+                            </button>
+                            <button class="nav-link" id="pending-tab" data-bs-toggle="pill" data-bs-target="#pendingWithdrawalsTab" type="button" role="tab">
+                                <i class="bi bi-clock"></i>
+                                <span>Pending</span>
+                                <span class="badge bg-warning ms-1" id="pendingWithdrawalBadge">0</span>
+                            </button>
+                            <button class="nav-link" id="completed-tab" data-bs-toggle="pill" data-bs-target="#completedWithdrawalsTab" type="button" role="tab">
+                                <i class="bi bi-check-circle"></i>
+                                <span>Completed</span>
+                            </button>
+                            <button class="nav-link" id="rejected-tab" data-bs-toggle="pill" data-bs-target="#rejectedWithdrawalsTab" type="button" role="tab">
+                                <i class="bi bi-x-circle"></i>
+                                <span>Rejected</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="tab-content" id="withdrawalsTabContent">
+                        <div class="tab-pane fade show active" id="allWithdrawalsTab" role="tabpanel">
+                            <div class="withdrawals-grid" id="allWithdrawalsTableBody">
+                                <!-- Loading placeholders -->
+                                <div class="withdrawal-card loading-placeholder">
+                                    <div class="withdrawal-header-placeholder"></div>
+                                    <div class="withdrawal-content-placeholder">
+                                        <div class="user-placeholder"></div>
+                                        <div class="amount-placeholder"></div>
+                                    </div>
+                                </div>
+                                <div class="withdrawal-card loading-placeholder">
+                                    <div class="withdrawal-header-placeholder"></div>
+                                    <div class="withdrawal-content-placeholder">
+                                        <div class="user-placeholder"></div>
+                                        <div class="amount-placeholder"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="pendingWithdrawalsTab" role="tabpanel">
+                            <div class="withdrawals-grid" id="pendingWithdrawalsTableBody">
+                                <!-- Loading placeholders -->
+                                <div class="withdrawal-card loading-placeholder">
+                                    <div class="withdrawal-header-placeholder"></div>
+                                    <div class="withdrawal-content-placeholder">
+                                        <div class="user-placeholder"></div>
+                                        <div class="amount-placeholder"></div>
+                                    </div>
+                                </div>
+                                <div class="withdrawal-card loading-placeholder">
+                                    <div class="withdrawal-header-placeholder"></div>
+                                    <div class="withdrawal-content-placeholder">
+                                        <div class="user-placeholder"></div>
+                                        <div class="amount-placeholder"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="completedWithdrawalsTab" role="tabpanel">
+                            <div class="withdrawals-grid" id="completedWithdrawalsTableBody">
+                                <!-- Loading placeholders -->
+                                <div class="withdrawal-card loading-placeholder">
+                                    <div class="withdrawal-header-placeholder"></div>
+                                    <div class="withdrawal-content-placeholder">
+                                        <div class="user-placeholder"></div>
+                                        <div class="amount-placeholder"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="rejectedWithdrawalsTab" role="tabpanel">
+                            <div class="withdrawals-grid" id="rejectedWithdrawalsTableBody">
+                                <!-- Loading placeholders -->
+                                <div class="withdrawal-card loading-placeholder">
+                                    <div class="withdrawal-header-placeholder"></div>
+                                    <div class="withdrawal-content-placeholder">
+                                        <div class="user-placeholder"></div>
+                                        <div class="amount-placeholder"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                 </div>
+            </section>
+
+            <!-- Deposits Section -->
+            <section id="deposits-section" class="section">
+                <div class="deposits-header mb-4">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                        <div class="header-content">
+                            <h2 class="section-title mb-2">Manage Deposits</h2>
+                            <p class="section-subtitle text-muted">Review and process user deposit requests</p>
+                        </div>
+                        <div class="header-stats">
+                            <div class="stat-item">
+                                <span class="stat-label">Pending</span>
+                                <span class="stat-value" id="pendingDepositCount">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Today</span>
+                                <span class="stat-value" id="todayDepositCount">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                    <div id="depositsStatus" class="mb-3"></div>
+                    
+                <div class="deposits-container">
+                    <div class="deposits-tabs mb-4">
+                        <div class="nav nav-pills deposits-nav" id="depositsTab" role="tablist">
+                            <button class="nav-link active" id="pending-deposits-tab" data-bs-toggle="pill" data-bs-target="#pendingDepositsTab" type="button" role="tab">
+                                <i class="bi bi-clock"></i>
+                                <span>Pending</span>
+                                <span class="badge bg-warning ms-1" id="pendingDepositBadge">0</span>
+                            </button>
+                            <button class="nav-link" id="approved-deposits-tab" data-bs-toggle="pill" data-bs-target="#approvedDepositsTab" type="button" role="tab">
+                                <i class="bi bi-check-circle"></i>
+                                <span>Approved</span>
+                            </button>
+                            <button class="nav-link" id="rejected-deposits-tab" data-bs-toggle="pill" data-bs-target="#rejectedDepositsTab" type="button" role="tab">
+                                <i class="bi bi-x-circle"></i>
+                                <span>Rejected</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="tab-content" id="depositsTabContent">
+                        <div class="tab-pane fade show active" id="pendingDepositsTab" role="tabpanel">
+                            <div class="deposits-grid" id="pendingDepositsTableBody">
+                                <!-- Loading placeholders -->
+                                <div class="deposit-card loading-placeholder">
+                                    <div class="deposit-header-placeholder"></div>
+                                    <div class="deposit-content-placeholder">
+                                        <div class="user-placeholder"></div>
+                                        <div class="amount-placeholder"></div>
+                                    </div>
+                                </div>
+                                <div class="deposit-card loading-placeholder">
+                                    <div class="deposit-header-placeholder"></div>
+                                    <div class="deposit-content-placeholder">
+                                        <div class="user-placeholder"></div>
+                                        <div class="amount-placeholder"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="tab-pane fade" id="approvedDepositsTab" role="tabpanel">
+                            <div class="deposits-grid" id="approvedDepositsTableBody">
+                                <!-- Loading placeholders -->
+                                <div class="deposit-card loading-placeholder">
+                                    <div class="deposit-header-placeholder"></div>
+                                    <div class="deposit-content-placeholder">
+                                        <div class="user-placeholder"></div>
+                                        <div class="amount-placeholder"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="tab-pane fade" id="rejectedDepositsTab" role="tabpanel">
+                            <div class="deposits-grid" id="rejectedDepositsTableBody">
+                                <!-- Loading placeholders -->
+                                <div class="deposit-card loading-placeholder">
+                                    <div class="deposit-header-placeholder"></div>
+                                    <div class="deposit-content-placeholder">
+                                        <div class="user-placeholder"></div>
+                                        <div class="amount-placeholder"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Settings Section -->
+            <section id="settings-section" class="section">
+                <div class="settings-header mb-4">
+                    <h2 class="section-title mb-2">App Settings</h2>
+                    <p class="section-subtitle text-muted">Configure application settings and policies</p>
+                </div>
+
+                <form id="appSettingsForm">
+                    <!-- Basic App Settings -->
+                    <div class="settings-card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="bi bi-gear"></i>
+                                Basic App Settings
+                            </h5>
+                        </div>
+            <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="settingLogoUrl" class="form-label">
+                                        <i class="bi bi-image me-2"></i>
+                                        Logo URL
+                                    </label>
+                                    <input type="url" class="form-control" id="settingLogoUrl" placeholder="https://example.com/logo.png">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="settingAppName" class="form-label">
+                                        <i class="bi bi-app me-2"></i>
+                                        App Name
+                                    </label>
+                                    <input type="text" class="form-control" id="settingAppName" placeholder="Your App Name">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Withdrawal Rules -->
+                    <div class="settings-card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="bi bi-cash-stack"></i>
+                                Withdrawal Rules
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-3 mb-3">
+                                    <label for="settingMinWithdraw" class="form-label">
+                                        <i class="bi bi-arrow-down me-2"></i>
+                                        Min per request (₹)
+                                    </label>
+                                    <input type="number" class="form-control" id="settingMinWithdraw" min="0" step="any" placeholder="100">
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label for="settingMaxWithdraw" class="form-label">
+                                        <i class="bi bi-arrow-up me-2"></i>
+                                        Max per request (₹)
+                                    </label>
+                                    <input type="number" class="form-control" id="settingMaxWithdraw" min="0" step="any" placeholder="1000">
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label for="settingDailyMaxWithdraw" class="form-label">
+                                        <i class="bi bi-calendar-day me-2"></i>
+                                        Max per day (₹)
+                                    </label>
+                                    <input type="number" class="form-control" id="settingDailyMaxWithdraw" min="0" step="any" placeholder="5000">
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label for="settingWithdrawCooldown" class="form-label">
+                                        <i class="bi bi-clock me-2"></i>
+                                        Cooldown (minutes)
+                                    </label>
+                                    <input type="number" class="form-control" id="settingWithdrawCooldown" min="0" placeholder="30">
+                                </div>
+                                <div class="col-12 mb-3">
+                                    <label for="settingWithdrawMethods" class="form-label">
+                                        <i class="bi bi-credit-card me-2"></i>
+                                        Withdrawal Methods
+                                    </label>
+                                    <textarea class="form-control" id="settingWithdrawMethods" rows="3" 
+                                              placeholder="UPI | Enter UPI ID&#10;Bank Transfer | Enter bank account details&#10;Paytm | Enter Paytm number"></textarea>
+                                    <small class="text-muted">Format: Label | placeholder (one per line)</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Payment & Referral Settings -->
+                    <div class="settings-card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="bi bi-wallet2"></i>
+                                Payment & Referral Settings
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="settingReferralBonus" class="form-label">
+                                        <i class="bi bi-gift me-2"></i>
+                                        Referral Bonus (₹)
+                                    </label>
+                                    <input type="number" class="form-control" id="settingReferralBonus" min="0" step="any" placeholder="20">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="settingUpiDetails" class="form-label">
+                                        <i class="bi bi-currency-rupee me-2"></i>
+                                        UPI Details for Payment
+                                    </label>
+                                    <input type="text" class="form-control" id="settingUpiDetails" placeholder="username@upi">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="settingQrCodeInput" class="form-label">
+                                        <i class="bi bi-qr-code me-2"></i>
+                                        QR Code Image
+                                    </label>
+                                    <input type="file" class="form-control" id="settingQrCodeInput" accept="image/*">
+                                    <div class="form-text text-muted">Upload QR code image (will be converted to link via ImgBB)</div>
+                                    <div id="qrCodeUploadStatus" class="mt-2" style="display: none;"></div>
+                                </div>
+                                <div class="col-md-6 mb-3" id="qrCodePreviewContainer" style="display: none;">
+                                    <label class="form-label">
+                                        <i class="bi bi-image me-2"></i>
+                                        QR Code Preview
+                                    </label>
+                                    <div class="text-center">
+                                        <img id="qrCodePreviewImg" class="img-fluid rounded" style="max-height: 120px; max-width: 120px;">
+                                        <div class="mt-2">
+                                            <button type="button" class="btn btn-sm btn-outline-danger" id="removeQrCodeBtn">
+                                                <i class="bi bi-trash me-1"></i>Remove
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="settingSupportContact" class="form-label">
+                                        <i class="bi bi-headset me-2"></i>
+                                        Admin Support Contact
+                                    </label>
+                                    <input type="text" class="form-control" id="settingSupportContact" placeholder="support@example.com">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-check form-switch settings-switch">
+                                        <input class="form-check-input" type="checkbox" id="settingAutoApproveDeposits">
+                                        <label class="form-check-label" for="settingAutoApproveDeposits">
+                                            <i class="bi bi-check-circle me-2"></i>
+                                            Auto-approve Deposits
+                                        </label>
+                                    </div>
+                                    <small class="text-muted">Automatically approve deposits when screenshot is uploaded</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Policy Settings -->
+                    <div class="settings-card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="bi bi-shield-check"></i>
+                                Policy Settings
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="settingPolicyPrivacy" class="form-label">
+                                        <i class="bi bi-shield-lock me-2"></i>
+                                        Privacy Policy
+                                    </label>
+                                    <textarea class="form-control" id="settingPolicyPrivacy" rows="4" 
+                                              placeholder="Enter your privacy policy here..."></textarea>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="settingPolicyTerms" class="form-label">
+                                        <i class="bi bi-file-text me-2"></i>
+                                        Terms & Conditions
+                                    </label>
+                                    <textarea class="form-control" id="settingPolicyTerms" rows="4" 
+                                              placeholder="Enter your terms and conditions here..."></textarea>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="settingPolicyRefund" class="form-label">
+                                        <i class="bi bi-arrow-return-left me-2"></i>
+                                        Refund Policy
+                                    </label>
+                                    <textarea class="form-control" id="settingPolicyRefund" rows="4" 
+                                              placeholder="Enter your refund policy here..."></textarea>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="settingPolicyFairPlay" class="form-label">
+                                        <i class="bi bi-award me-2"></i>
+                                        Fair Play Policy
+                                    </label>
+                                    <textarea class="form-control" id="settingPolicyFairPlay" rows="4" 
+                                              placeholder="Enter your fair play policy here..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Save Button -->
+                    <div class="settings-actions">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-save me-2"></i>
+                            Save Settings
+                        </button>
+                        <div id="settingsStatus" class="mt-3"></div>
+                    </div>
+                </form>
+            </section>
+
+        <!-- Referral Section -->
+        <section id="referral-section" class="section">
+            <div class="mb-4">
+                <h2 class="section-title mb-2">Referral Management</h2>
+                <p class="section-subtitle text-muted">Manage referral system and track performance</p>
+            </div>
+
+            <!-- Referral Statistics Cards -->
+            <div class="referral-stats-grid mb-4">
+                <div class="referral-stat-card">
+                    <div class="stat-icon">
+                                <i class="bi bi-people-fill"></i>
+                            </div>
+                    <div class="stat-content">
+                        <h5 class="stat-title">Total Referrals</h5>
+                        <p class="stat-value" id="statTotalReferralsCard">--</p>
+                        </div>
+                    </div>
+                <div class="referral-stat-card">
+                    <div class="stat-icon">
+                                <i class="bi bi-coin"></i>
+                            </div>
+                    <div class="stat-content">
+                        <h5 class="stat-title">Total Earnings</h5>
+                        <p class="stat-value" id="statTotalReferralEarningsCard">₹--</p>
+                        </div>
+                    </div>
+                <div class="referral-stat-card">
+                    <div class="stat-icon">
+                                <i class="bi bi-person-check"></i>
+                            </div>
+                    <div class="stat-content">
+                        <h5 class="stat-title">Active Referrers</h5>
+                        <p class="stat-value" id="statActiveReferrersCard">--</p>
+                        </div>
+                    </div>
+                <div class="referral-stat-card">
+                    <div class="stat-icon">
+                                <i class="bi bi-gift"></i>
+                            </div>
+                    <div class="stat-content">
+                        <h5 class="stat-title">Referral Bonus</h5>
+                        <p class="stat-value" id="statReferralBonusCard">₹--</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Referral Settings -->
+            <div class="referral-settings-card mb-4">
+                    <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-gear"></i>
+                        Referral Settings
+                    </h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="referralSettingsForm">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="referralBonusAmount" class="form-label">Referral Bonus Amount (₹)</label>
+                                    <input type="number" step="any" class="form-control" id="referralBonusAmount" min="0" value="20">
+                                    <small class="text-muted">Amount given to both referrer and referred user</small>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="referralBonusType" class="form-label">Bonus Type</label>
+                                    <select class="form-select" id="referralBonusType">
+                                        <option value="bonusCash">Bonus Cash</option>
+                                        <option value="balance">Deposit Balance</option>
+                                    </select>
+                                    <small class="text-muted">Type of balance to credit</small>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-save"></i> Save Referral Settings
+                            </button>
+                        </form>
+                        <div id="referralSettingsStatus" class="mt-3"></div>
+                    </div>
+                </div>
+
+                <!-- Top Referrers -->
+            <div class="referral-leaders-card">
+                    <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-trophy"></i>
+                        Top Referrers
+                    </h5>
+                    </div>
+                    <div class="card-body">
+                    <div id="topReferrersList" class="referral-leaders-list">
+                        <!-- Loading placeholders -->
+                        <div class="referral-leader-item loading-placeholder">
+                            <div class="leader-rank-placeholder"></div>
+                            <div class="leader-info-placeholder">
+                                <div class="leader-name-placeholder"></div>
+                                <div class="leader-email-placeholder"></div>
+                                </div>
+                            <div class="leader-stats-placeholder"></div>
+                        </div>
+                        <div class="referral-leader-item loading-placeholder">
+                            <div class="leader-rank-placeholder"></div>
+                            <div class="leader-info-placeholder">
+                                <div class="leader-name-placeholder"></div>
+                                <div class="leader-email-placeholder"></div>
+                            </div>
+                            <div class="leader-stats-placeholder"></div>
+                        </div>
+                        <div class="referral-leader-item loading-placeholder">
+                            <div class="leader-rank-placeholder"></div>
+                            <div class="leader-info-placeholder">
+                                <div class="leader-name-placeholder"></div>
+                                <div class="leader-email-placeholder"></div>
+                            </div>
+                            <div class="leader-stats-placeholder"></div>
+                            </div>
+                        </div>
+                        <p id="noTopReferrersMessage" class="text-center text-secondary mt-3" style="display: none;">
+                            No referral data available.
+                        </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Support Section -->
+        <section id="support-section" class="section">
+            <div class="mb-4">
+                <h2 class="section-title mb-2">Support Ticket Management</h2>
+                <p class="section-subtitle text-muted">Manage user support tickets and provide assistance</p>
+            </div>
+
+            <!-- Support Statistics Cards -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card text-center h-100">
+                        <div class="card-body">
+                            <div class="stat-icon mb-3">
+                                <i class="bi bi-headset text-info"></i>
+                            </div>
+                            <h5 class="card-title">Total Tickets</h5>
+                            <p class="stat-value text-info" id="adminTotalTicketsEl">--</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center h-100">
+                        <div class="card-body">
+                            <div class="stat-icon mb-3">
+                                <i class="bi bi-clock text-warning"></i>
+                            </div>
+                            <h5 class="card-title">Pending</h5>
+                            <p class="stat-value text-warning" id="adminPendingTicketsEl">--</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center h-100">
+                        <div class="card-body">
+                            <div class="stat-icon mb-3">
+                                <i class="bi bi-chat-dots text-primary"></i>
+                            </div>
+                            <h5 class="card-title">In Progress</h5>
+                            <p class="stat-value text-primary" id="adminInProgressTicketsEl">--</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center h-100">
+                        <div class="card-body">
+                            <div class="stat-icon mb-3">
+                                <i class="bi bi-check-circle text-success"></i>
+                            </div>
+                            <h5 class="card-title">Resolved</h5>
+                            <p class="stat-value text-success" id="adminResolvedTicketsEl">--</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Support Tickets List -->
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="bi bi-list-ul me-2"></i>
+                        Support Tickets
+                    </h5>
+                    <div>
+                        <button class="btn btn-sm btn-outline-primary" id="adminRefreshTicketsBtnEl">
+                            <i class="bi bi-arrow-clockwise"></i> Refresh
+                        </button>
+                        <select class="form-select form-select-sm d-inline-block w-auto ms-2" id="adminTicketFilterEl">
+                            <option value="all">All Tickets</option>
+                            <option value="pending">Pending</option>
+                            <option value="in-progress">In Progress</option>
+                            <option value="resolved">Resolved</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div id="adminTicketsListEl" class="placeholder-glow">
+                        <!-- Loading placeholders -->
+                        <div class="card mb-2 placeholder-glow">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="flex-grow-1">
+                                        <span class="placeholder col-6" style="height: 18px;"></span>
+                                        <span class="placeholder col-8" style="height: 14px;"></span>
+                                    </div>
+                                    <span class="placeholder col-2" style="height: 20px;"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="adminNoTicketsMessageEl" class="text-center text-secondary mt-3" style="display: none;">
+                        <i class="bi bi-chat-dots display-4 d-block mb-3"></i>
+                        No support tickets found.<br>
+                        All tickets have been resolved!
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Leaderboard Section -->
+        <section id="leaderboard-section" class="section card">
+            <div class="card-body">
+                <h2 class="card-title">Leaderboard Management</h2>
+                
+                <!-- Leaderboard Settings -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Leaderboard Settings</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="leaderboardSettingsForm">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="leaderboardMaxPlayers" class="form-label">Max Players to Show</label>
+                                    <input type="number" class="form-control" id="leaderboardMaxPlayers" min="5" max="100" value="20">
+                                    <small class="text-muted">Number of players to display in leaderboard</small>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="leaderboardUpdateFrequency" class="form-label">Update Frequency (minutes)</label>
+                                    <input type="number" class="form-control" id="leaderboardUpdateFrequency" min="1" max="1440" value="30">
+                                    <small class="text-muted">How often to update leaderboard data</small>
+                                </div>
+                            </div>
+                            
+                            <h6 class="mt-4 mb-3">Reward Settings</h6>
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label for="reward1stPlace" class="form-label">1st Place Reward (₹)</label>
+                                    <input type="number" class="form-control" id="reward1stPlace" min="0" step="any" value="100">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="reward2ndPlace" class="form-label">2nd Place Reward (₹)</label>
+                                    <input type="number" class="form-control" id="reward2ndPlace" min="0" step="any" value="50">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="reward3rdPlace" class="form-label">3rd Place Reward (₹)</label>
+                                    <input type="number" class="form-control" id="reward3rdPlace" min="0" step="any" value="25">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label for="reward4thPlace" class="form-label">4th Place Reward (₹)</label>
+                                    <input type="number" class="form-control" id="reward4thPlace" min="0" step="any" value="10">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="reward5thPlace" class="form-label">5th Place Reward (₹)</label>
+                                    <input type="number" class="form-control" id="reward5thPlace" min="0" step="any" value="5">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="rewardTop10" class="form-label">Top 10 Bonus (₹)</label>
+                                    <input type="number" class="form-control" id="rewardTop10" min="0" step="any" value="2">
+                                </div>
+                            </div>
+                            
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="leaderboardAutoRewards" checked>
+                                <label class="form-check-label" for="leaderboardAutoRewards">
+                                    Auto-distribute rewards
+                                </label>
+                                <small class="text-muted d-block">Automatically distribute rewards to top players</small>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-save"></i> Save Leaderboard Settings
+                            </button>
+                        </form>
+                        <div id="leaderboardSettingsStatus" class="mt-3"></div>
+                    </div>
+                </div>
+
+                <!-- Current Leaderboard -->
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Current Leaderboard</h5>
+                        <div>
+                            <button class="btn btn-sm btn-outline-primary" id="refreshLeaderboardBtn">
+                                <i class="bi bi-arrow-clockwise"></i> Refresh
+                            </button>
+                            <button class="btn btn-sm btn-outline-success" id="distributeRewardsBtn">
+                                <i class="bi bi-gift"></i> Distribute Rewards
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <select class="form-select" id="leaderboardTypeSelect">
+                                    <option value="earnings">Top Earners</option>
+                                    <option value="wins">Most Wins</option>
+                                    <option value="tournaments">Most Tournaments</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <input type="date" class="form-control" id="leaderboardDateSelect">
+                            </div>
+                            <div class="col-md-4">
+                                <button class="btn btn-outline-secondary w-100" id="exportLeaderboardBtn">
+                                    <i class="bi bi-download"></i> Export
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div id="adminLeaderboardList" class="placeholder-glow">
+                            <div class="d-flex justify-content-between align-items-center p-3 border-bottom">
+                                <div>
+                                    <span class="placeholder col-4" style="height: 16px;"></span>
+                                    <br>
+                                    <span class="placeholder col-6" style="height: 14px;"></span>
+                                </div>
+                                <span class="placeholder col-2" style="height: 20px;"></span>
+                            </div>
+                        </div>
+                        <p id="noLeaderboardDataMessage" class="text-center text-secondary mt-3" style="display: none;">
+                            No leaderboard data available.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Announcements Section -->
+            <section id="announcements-section" class="section">
+                <div class="announcements-header mb-4">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                        <div class="header-content">
+                            <h2 class="section-title mb-2">Manage Announcements</h2>
+                            <p class="section-subtitle text-muted">Create and manage platform-wide announcements</p>
+                        </div>
+                        <div class="header-actions">
+                            <button class="btn btn-primary add-announcement-btn" data-bs-toggle="modal" data-bs-target="#announcementModal" id="addNewAnnouncementBtn">
+                                <i class="bi bi-plus-circle"></i>
+                                <span>Add Announcement</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="announcementsStatus" class="mb-3"></div>
+                
+                <div class="announcements-container">
+                    <div class="announcements-grid" id="announcementsTableBody">
+                        <!-- Loading placeholders -->
+                        <div class="announcement-card loading-placeholder">
+                            <div class="announcement-header-placeholder"></div>
+                            <div class="announcement-content-placeholder">
+                                <div class="title-placeholder"></div>
+                                <div class="content-placeholder"></div>
+                            </div>
+                        </div>
+                        <div class="announcement-card loading-placeholder">
+                            <div class="announcement-header-placeholder"></div>
+                            <div class="announcement-content-placeholder">
+                                <div class="title-placeholder"></div>
+                                <div class="content-placeholder"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Analytics Section -->
+            <section id="analytics-section" class="section">
+                <h2 class="section-title">User Analytics & Insights</h2>
+                
+                <!-- Analytics Overview Cards -->
+                <div class="row mb-4">
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <div class="card text-bg-primary">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">Total Users</h5>
+                                <p class="card-text fs-3 fw-bold mb-0" id="analyticsTotalUsers">--</p>
+                                <small class="text-light">All time</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <div class="card text-bg-success">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">Active Users</h5>
+                                <p class="card-text fs-3 fw-bold mb-0" id="analyticsActiveUsers">--</p>
+                                <small class="text-light">Last 30 days</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <div class="card text-bg-info">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">New Users</h5>
+                                <p class="card-text fs-3 fw-bold mb-0" id="analyticsNewUsers">--</p>
+                                <small class="text-light">This month</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <div class="card text-bg-warning">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">Revenue</h5>
+                                <p class="card-text fs-3 fw-bold mb-0" id="analyticsRevenue">₹--</p>
+                                <small class="text-light">Total earnings</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Date Range Selector -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="row align-items-end">
+                            <div class="col-md-3">
+                                <label for="analyticsDateRange" class="form-label">Date Range</label>
+                                <select class="form-select" id="analyticsDateRange">
+                                    <option value="7">Last 7 days</option>
+                                    <option value="30" selected>Last 30 days</option>
+                                    <option value="90">Last 3 months</option>
+                                    <option value="365">Last year</option>
+                                    <option value="custom">Custom range</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3" id="customDateRangeDiv" style="display: none;">
+                                <label for="analyticsStartDate" class="form-label">Start Date</label>
+                                <input type="date" class="form-control" id="analyticsStartDate">
+                            </div>
+                            <div class="col-md-3" id="customDateRangeDiv2" style="display: none;">
+                                <label for="analyticsEndDate" class="form-label">End Date</label>
+                                <input type="date" class="form-control" id="analyticsEndDate">
+                            </div>
+                            <div class="col-md-3">
+                                <button class="btn btn-primary w-100" id="refreshAnalyticsBtn">
+                                    <i class="bi bi-arrow-clockwise"></i> Refresh Data
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Row 1 -->
+                <div class="row mb-4">
+                    <div class="col-lg-8 mb-3">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">User Growth & Activity</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="userGrowthChart" height="300"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 mb-3">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">User Demographics</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="userDemographicsChart" height="300"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Row 2 -->
+                <div class="row mb-4">
+                    <div class="col-lg-6 mb-3">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Tournament Participation</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="tournamentParticipationChart" height="250"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 mb-3">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Revenue Analysis</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="revenueAnalysisChart" height="250"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Row 3 -->
+                <div class="row mb-4">
+                    <div class="col-lg-6 mb-3">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Game Popularity</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="gamePopularityChart" height="250"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 mb-3">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">User Engagement</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="userEngagementChart" height="250"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detailed Analytics Tables -->
+                <div class="row">
+                    <div class="col-lg-6 mb-3">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Top Performing Users</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-dark table-sm">
+                                        <thead>
+                                            <tr>
+                                                <th>User</th>
+                                                <th>Tournaments</th>
+                                                <th>Winnings</th>
+                                                <th>Win Rate</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="topPerformingUsersTable">
+                                            <!-- Data will be populated by JavaScript -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 mb-3">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Popular Tournaments</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-dark table-sm">
+                                        <thead>
+                                            <tr>
+                                                <th>Tournament</th>
+                                                <th>Participants</th>
+                                                <th>Prize Pool</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="popularTournamentsTable">
+                                            <!-- Data will be populated by JavaScript -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Analytics Status -->
+                <div id="analyticsStatus" class="mt-3"></div>
+                
+                <!-- Demo Data Generation -->
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Demo Data Generation</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted">Generate sample analytics data for testing and demonstration purposes.</p>
+                        <button class="btn btn-warning" id="generateDemoAnalyticsBtn">
+                            <i class="bi bi-database-add"></i> Generate Demo Analytics Data
+                        </button>
+                        <small class="text-muted d-block mt-2">This will create sample user growth, revenue, and demographic data for the last 90 days.</small>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Challenge Management Section -->
+            <section id="challenges-section" class="section">
+                <div class="challenges-header mb-4">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                        <div class="header-content">
+                            <h2 class="section-title mb-2">
+                                <i class="bi bi-sword"></i> Challenge Management
+                            </h2>
+                            <p class="section-subtitle text-muted">Monitor challenges, resolve disputes, and manage the challenge system</p>
+                        </div>
+                        <div class="header-actions">
+                            <div class="btn-group" role="group">
+                                <button class="btn btn-outline-primary" id="refreshChallengesBtn">
+                                    <i class="bi bi-arrow-clockwise"></i> Refresh
+                                </button>
+                                <button class="btn btn-outline-info" id="exportChallengesBtn">
+                                    <i class="bi bi-download"></i> Export
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Challenge Filters -->
+                <div class="challenge-filters mb-4">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <label for="challengeStatusFilter" class="form-label">Status Filter</label>
+                            <select class="form-select" id="challengeStatusFilter">
+                                <option value="all">All Status</option>
+                                <option value="open">Open</option>
+                                <option value="accepted">Accepted</option>
+                                <option value="completed">Completed</option>
+                                <option value="under-review">Under Review</option>
+                                <option value="cancelled">Cancelled</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="challengeGameFilter" class="form-label">Game Filter</label>
+                            <select class="form-select" id="challengeGameFilter">
+                                <option value="all">All Games</option>
+                                <!-- Games will be loaded here -->
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="challengeDateFilter" class="form-label">Date Filter</label>
+                            <select class="form-select" id="challengeDateFilter">
+                                <option value="all">All Time</option>
+                                <option value="today">Today</option>
+                                <option value="week">This Week</option>
+                                <option value="month">This Month</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="challengeSearch" class="form-label">Search</label>
+                            <input type="text" class="form-control" id="challengeSearch" placeholder="Search challenges...">
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="challengesStatus" class="mb-3"></div>
+                
+                <div class="challenges-container">
+                    <div class="challenges-table-container">
+                        <div class="table-responsive">
+                            <table class="table table-dark table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Challenge</th>
+                                        <th>Game</th>
+                                        <th>Players</th>
+                                        <th>Entry Fee</th>
+                                        <th>Status</th>
+                                        <th>Created</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="adminChallengesTableBody">
+                                    <!-- Loading placeholders -->
+                                    <tr class="loading-placeholder">
+                                        <td colspan="7">
+                                            <div class="placeholder w-100 py-3"></div>
+                                        </td>
+                                    </tr>
+                                    <tr class="loading-placeholder">
+                                        <td colspan="7">
+                                            <div class="placeholder w-100 py-3"></div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+    </main>
+    </div>
+
+    <!-- Modals -->
+    <!-- Add/Edit Game Modal -->
+    <div class="modal fade" id="gameModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content modal-modern">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="gameModalTitle">Add New Game</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="gameForm">
+                        <input type="hidden" id="gameEditId">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label for="gameName" class="form-label">Game Name</label>
+                                <input type="text" class="form-control" id="gameName" required placeholder="Enter game name">
+                            </div>
+                            <div class="col-12">
+                                <label for="gameLogo" class="form-label">Game Logo/Banner URL</label>
+                                <input type="url" class="form-control" id="gameLogo" placeholder="https://example.com/game-logo.png">
+                                <small class="text-muted">Direct image URL (PNG, JPG, WebP)</small>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="challengeModeEnabled">
+                                    <label class="form-check-label" for="challengeModeEnabled">
+                                        <strong>Enable Challenge Mode</strong>
+                                    </label>
+                                </div>
+                                <small class="text-muted">If enabled, users can create and accept challenges for this game</small>
+                            </div>
+                            
+                            <!-- Challenge Settings (only visible when enabled) -->
+                            <div id="challengeSettings" class="col-12" style="display: none;">
+                                <div class="card bg-light">
+                                    <div class="card-body">
+                                        <h6 class="card-title mb-3">
+                                            <i class="bi bi-gear"></i> Challenge Settings
+                                        </h6>
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <label for="minEntryFee" class="form-label">Minimum Entry Fee (₹)</label>
+                                                <input type="number" class="form-control" id="minEntryFee" min="10" step="10" value="50">
+                                                <small class="text-muted">Users cannot set entry fee below this amount</small>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="commissionPercent" class="form-label">Commission (%)</label>
+                                                <input type="number" class="form-control" id="commissionPercent" min="5" max="50" step="5" value="20">
+                                                <small class="text-muted">Platform commission from total prize pool</small>
+                                            </div>
+                                            <div class="col-12">
+                                                <div class="alert alert-info">
+                                                    <strong>Prize Pool Formula:</strong><br>
+                                                    Prize Pool = (Entry Fee × 2) - Commission<br>
+                                                    Commission = (Entry Fee × 2 × Commission%) / 100<br>
+                                                    <strong>Example:</strong> ₹50 entry fee with 20% commission = ₹80 prize pool
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="gameStatus" class="mt-3"></div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="saveGameBtn">Add Game</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Add/Edit Promotion Modal -->
+    <div class="modal fade" id="promotionModal" tabindex="-1"> <div class="modal-dialog"> <div class="modal-content"> <div class="modal-header"> <h5 class="modal-title" id="promotionModalTitle">Add New Promotion</h5> <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button> </div> <div class="modal-body"> <form id="promotionForm"> <input type="hidden" id="promotionEditId"> <div class="mb-3"> <label for="promoImageUrl" class="form-label">Image URL</label> <input type="url" class="form-control" id="promoImageUrl" required> <small class="text-muted">Direct image URL (e.g., from ImgBB).</small> </div> <div class="mb-3"> <label for="promoImageFile" class="form-label">Upload New Image (Optional - Overwrites URL)</label> <input class="form-control" type="file" id="promoImageFile" accept="image/*"> <div class="imgbb-upload-status mt-2"></div> </div> <div class="mb-3"> <label for="promoLink" class="form-label">Link (Optional)</label> <input type="url" class="form-control" id="promoLink"> </div> <div id="promotionStatus" class="mt-2"></div></form> </div> <div class="modal-footer"> <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button> <button type="button" class="btn btn-primary" id="savePromotionBtn">Save Promotion</button> </div> </div> </div> </div>
+    <!-- Add/Edit Tournament Modal -->
+    <div class="modal fade" id="addTournamentModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content modal-modern">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="tournamentModalTitle">Add New Tournament</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="tournamentForm">
+                        <input type="hidden" id="tournamentEditId">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label for="tournamentGame" class="form-label">Game</label>
+                                <select class="form-select" id="tournamentGame" required></select>
+                            </div>
+                            <div class="col-md-8">
+                                <label for="tournamentName" class="form-label">Tournament Name</label>
+                                <input type="text" class="form-control" id="tournamentName" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="tournamentStartTime" class="form-label">Start Date & Time</label>
+                                <input type="text" class="form-control" id="tournamentStartTime" placeholder="Select Date and Time" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="tournamentStatus" class="form-label">Status</label>
+                                <select class="form-select" id="tournamentStatus" required>
+                                    <option value="upcoming">Upcoming</option>
+                                    <option value="ongoing">Ongoing</option>
+                                    <option value="completed">Completed</option>
+                                    <option value="result">Result</option>
+                                    <option value="cancelled">Cancelled</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="tournamentEntryFee" class="form-label">Entry Fee (₹)</label>
+                                <input type="number" class="form-control" id="tournamentEntryFee" min="0" value="0" required step="any">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="tournamentPrizePool" class="form-label">Total Prize Pool (₹)</label>
+                                <input type="number" class="form-control" id="tournamentPrizePool" min="0" value="0" step="any">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="tournamentPerKill" class="form-label">Per Kill Prize (₹)</label>
+                                <input type="number" class="form-control" id="tournamentPerKill" min="0" value="0" step="any">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="tournamentMaxPlayers" class="form-label">Max Players (0 for Unlimited)</label>
+                                <input type="number" class="form-control" id="tournamentMaxPlayers" min="0" value="0" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="tournamentMode" class="form-label">Mode</label>
+                                <select class="form-select" id="tournamentMode" required>
+                                    <option value="solo">Solo</option>
+                                    <option value="duo">Duo</option>
+                                    <option value="squad">Squad</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="tournamentTags" class="form-label">Tags (comma-separated)</label>
+                                <input type="text" class="form-control" id="tournamentTags" placeholder="e.g., Erangel, TPP">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="tournamentMap" class="form-label">Map</label>
+                                <input type="text" class="form-control" id="tournamentMap" placeholder="e.g., Erangel, Miramar, Sanhok">
+                            </div>
+                            <div class="col-12">
+                                <div class="form-section-title">Prizes & Rules</div>
+                                <label for="tournamentPrizeDescription" class="form-label">Prize Description</label>
+                                <div class="custom-editor-wrapper">
+                                    <div class="custom-editor-toolbar">
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" data-format="bold" title="Bold">
+                                            <i class="bi bi-type-bold"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" data-format="italic" title="Italic">
+                                            <i class="bi bi-type-italic"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" data-format="bullet" title="Bullet List">
+                                            <i class="bi bi-list-ul"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" data-format="number" title="Numbered List">
+                                            <i class="bi bi-list-ol"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" data-format="clear" title="Clear Formatting">
+                                            <i class="bi bi-eraser"></i>
+                                        </button>
+                                    </div>
+                                    <div class="custom-editor-content" id="tournamentPrizeDescription" contenteditable="true" data-placeholder="e.g., 1st: ₹500, 2nd: ₹300, 3rd: ₹200, Per Kill: ₹50"></div>
+                                    <input type="hidden" id="tournamentPrizeDescriptionInput" name="tournamentPrizeDescription">
+                                </div>
+                                <small class="text-muted">Use the toolbar above to format text, add lists, and create rich content.</small>
+                            </div>
+                            <div class="col-12">
+                                <label for="tournamentDescription" class="form-label">Description / Rules</label>
+                                <div class="custom-editor-wrapper">
+                                    <div class="custom-editor-toolbar">
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" data-format="bold" title="Bold">
+                                            <i class="bi bi-type-bold"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" data-format="italic" title="Italic">
+                                            <i class="bi bi-type-italic"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" data-format="bullet" title="Bullet List">
+                                            <i class="bi bi-list-ul"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" data-format="number" title="Numbered List">
+                                            <i class="bi bi-list-ol"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" data-format="clear" title="Clear Formatting">
+                                            <i class="bi bi-eraser"></i>
+                                        </button>
+                                    </div>
+                                    <div class="custom-editor-content" id="tournamentDescription" contenteditable="true" data-placeholder="Enter tournament description and rules here..."></div>
+                                    <input type="hidden" id="tournamentDescriptionInput" name="tournamentDescription">
+                                </div>
+                                <small class="text-muted">Use the toolbar above to format text, add lists, and create rich content.</small>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="tournamentRoomId" class="form-label">Room ID</label>
+                                <input type="text" class="form-control" id="tournamentRoomId">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="tournamentRoomPassword" class="form-label">Room Password</label>
+                                <input type="text" class="form-control" id="tournamentRoomPassword">
+                            </div>
+                            <div class="form-check mb-2 ms-2">
+                                <input class="form-check-input" type="checkbox" id="tournamentShowIdPass">
+                                <label class="form-check-label" for="tournamentShowIdPass">Show ID/Pass?</label>
+                            </div>
+                        </div>
+                        <div id="addTournamentStatus" class="mt-2"></div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="saveTournamentBtn">Save Tournament</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- View/Edit User Modal -->
+    <div class="modal fade" id="userModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header border-0 pb-0">
+                    <div class="d-flex align-items-center w-100">
+                        <div class="user-avatar-container me-3">
+                            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iMzAiIGZpbGw9IiMzMDM2M0QiLz4KPHN2ZyB4PSIxNSIgeT0iMTUiIHdpZHRoPSIzMCIgaGVpZ2h0PSIzMCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjOEE5NDlFIj4KPHBhdGggZD0iTTEyIDEyYzIuMjEgMCA0LTEuNzkgNC00cy0xLjc5LTQtNC00LTQgMS43OS00IDQgMS43OSA0IDQgNHptMCAyYy0yLjY3IDAtOCAxLjM0LTggNHYyaDE2di0yYzAtMi42Ni01LjMzLTQtOC00eiIvPgo8L3N2Zz4KPC9zdmc+" alt="Avatar" id="userDetailAvatar" class="user-avatar">
+                        </div>
+                        <div class="flex-grow-1">
+                            <h4 class="modal-title mb-1" id="userModalTitle">User Details</h4>
+                            <p class="text-muted mb-0" id="userDetailEmail"></p>
+                        </div>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                </div>
+                
+                <div class="modal-body pt-3">
+                    <!-- User Info Cards -->
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <div class="info-card">
+                                <div class="info-card-header">
+                                    <i class="bi bi-person-circle text-primary"></i>
+                                    <h6 class="mb-0">Personal Info</h6>
+                                </div>
+                                <div class="info-card-body">
+                                    <div class="info-item">
+                                        <span class="info-label">UID:</span>
+                                        <span class="info-value">
+                                            <small id="userDetailUid" class="text-muted user-uid-copy"></small>
+                                            <i class="bi bi-clipboard copy-btn ms-1" data-target="#userDetailUid" title="Copy UID"></i>
+                                        </span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">Name:</span>
+                                        <span class="info-value" id="userDetailName"></span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">Username:</span>
+                                        <span class="info-value" id="userDetailUsername"></span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">Phone:</span>
+                                        <span class="info-value" id="userDetailPhone"></span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">Joined:</span>
+                                        <span class="info-value" id="userDetailCreatedAt">N/A</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <div class="info-card">
+                                <div class="info-card-header">
+                                    <i class="bi bi-wallet2 text-success"></i>
+                                    <h6 class="mb-0">Wallet Balance</h6>
+                                </div>
+                                <div class="info-card-body">
+                                    <div class="balance-item">
+                                        <span class="balance-label">Deposit</span>
+                                        <span class="balance-value text-primary">₹<span id="userDetailBalance">0.00</span></span>
+                                    </div>
+                                    <div class="balance-item">
+                                        <span class="balance-label">Winning Cash</span>
+                                        <span class="balance-value text-success">₹<span id="userDetailWinning">0.00</span></span>
+                                    </div>
+                                    <div class="balance-item">
+                                        <span class="balance-label">Bonus Cash</span>
+                                        <span class="balance-value text-warning">₹<span id="userDetailBonus">0.00</span></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <div class="info-card">
+                                <div class="info-card-header">
+                                    <i class="bi bi-trophy text-warning"></i>
+                                    <h6 class="mb-0">Tournament Stats</h6>
+                                </div>
+                                <div class="info-card-body">
+                                    <div class="stats-item">
+                                        <span class="stats-label">Tournaments</span>
+                                        <span class="stats-value" id="userDetailTournamentsJoined">0</span>
+                                    </div>
+                                    <div class="stats-item">
+                                        <span class="stats-label">Matches Won</span>
+                                        <span class="stats-value" id="userDetailMatchesWon">0</span>
+                                    </div>
+                                    <div class="stats-item">
+                                        <span class="stats-label">Win Rate</span>
+                                        <span class="stats-value" id="userDetailWinRate">0%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Referral Info Card -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <div class="info-card">
+                                <div class="info-card-header">
+                                    <i class="bi bi-share text-info"></i>
+                                    <h6 class="mb-0">Referral Information</h6>
+                                </div>
+                                <div class="info-card-body">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <div class="referral-item">
+                                                <span class="referral-label">Referral Code</span>
+                                                <span class="referral-value">
+                                                    <span id="userDetailReferralCode" class="text-info">N/A</span>
+                                                    <i class="bi bi-clipboard copy-btn ms-1" data-target="#userDetailReferralCode" title="Copy Code"></i>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="referral-item">
+                                                <span class="referral-label">Referred By</span>
+                                                <span class="referral-value" id="userDetailReferredBy">N/A</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="referral-item">
+                                                <span class="referral-label">Users Referred</span>
+                                                <span class="referral-value" id="userDetailReferredCount">N/A</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="referral-item">
+                                                <span class="referral-label">Referral Earnings</span>
+                                                <span class="referral-value text-success">₹<span id="userDetailReferralEarnings">0.00</span></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Action Cards -->
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="info-card">
+                                <div class="info-card-header">
+                                    <i class="bi bi-gear text-warning"></i>
+                                    <h6 class="mb-0">Update Balance</h6>
+                                </div>
+                                <div class="info-card-body">
+                                    <form id="updateBalanceForm">
+                                        <input type="hidden" id="editUserUid">
+                                        <div class="row">
+                                            <div class="col-md-4 mb-3">
+                                                <label for="balanceUpdateAmount" class="form-label">Amount (+/-)</label>
+                                                <input type="number" step="any" class="form-control" id="balanceUpdateAmount" placeholder="e.g., 50 or -20" required>
+                                            </div>
+                                            <div class="col-md-4 mb-3">
+                                                <label for="balanceUpdateType" class="form-label">Balance Type</label>
+                                                <select id="balanceUpdateType" class="form-select" required>
+                                                    <option value="">--Select--</option>
+                                                    <option value="balance">Deposit</option>
+                                                    <option value="winningCash">Winning Cash</option>
+                                                    <option value="bonusCash">Bonus Cash</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-4 mb-3">
+                                                <label for="balanceUpdateReason" class="form-label">Reason</label>
+                                                <input type="text" class="form-control" id="balanceUpdateReason" placeholder="Manual Deposit, Correction etc." required>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex gap-2">
+                                            <button type="submit" class="btn btn-warning">
+                                                <i class="bi bi-currency-exchange"></i> Update Balance
+                                            </button>
+                                            <div id="balanceUpdateStatus" class="flex-grow-1"></div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <div class="info-card">
+                                <div class="info-card-header">
+                                    <i class="bi bi-shield-check text-danger"></i>
+                                    <h6 class="mb-0">Status & Actions</h6>
+                                </div>
+                                <div class="info-card-body">
+                                    <div class="status-item mb-3">
+                                        <span class="status-label">Current Status:</span>
+                                        <span id="userDetailStatus" class="status-badge"></span>
+                                    </div>
+                                    <div class="d-grid gap-2">
+                                        <button class="btn btn-sm" id="userBlockBtn"></button>
+                                        <button class="btn btn-sm btn-outline-danger" id="userDeleteBtn">
+                                            <i class="bi bi-trash"></i> Delete User
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle"></i> Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Withdrawal Action Modal -->
+    <div class="modal fade" id="withdrawalActionModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content modal-modern">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-cash-stack me-2"></i>
+                        Withdrawal Action
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Withdrawal Details Card -->
+                    <div class="withdrawal-details-card mb-4">
+                        <div class="detail-row">
+                            <div class="detail-label">
+                                <i class="bi bi-hash me-2"></i>
+                                Request ID
+                            </div>
+                            <div class="detail-value">
+                                <span id="withdrawalDetailId" class="withdrawal-id-copy"></span>
+                                <button class="btn btn-sm btn-outline-secondary copy-btn ms-2" data-target="#withdrawalDetailId" title="Copy Request ID">
+                                    <i class="bi bi-clipboard"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="detail-row">
+                            <div class="detail-label">
+                                <i class="bi bi-person me-2"></i>
+                                User
+                            </div>
+                            <div class="detail-value">
+                                <div class="user-info">
+                                    <span id="withdrawalDetailUser" class="user-name"></span>
+                                    <small id="withdrawalDetailUserUid" class="user-uid withdrawal-user-uid-copy"></small>
+                                    <button class="btn btn-sm btn-outline-secondary copy-btn ms-2" data-target="#withdrawalDetailUserUid" title="Copy User UID">
+                                        <i class="bi bi-clipboard"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="detail-row">
+                            <div class="detail-label">
+                                <i class="bi bi-currency-rupee me-2"></i>
+                                Amount
+                            </div>
+                            <div class="detail-value amount-value">
+                                ₹<span id="withdrawalDetailAmount"></span>
+                            </div>
+                        </div>
+                        
+                        <div class="detail-row">
+                            <div class="detail-label">
+                                <i class="bi bi-credit-card me-2"></i>
+                                Payment Method
+                            </div>
+                            <div class="detail-value">
+                                <span id="withdrawalDetailMethod" class="method-text"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Forms -->
+                    <div id="withdrawalRejectReasonDiv" style="display: none;" class="action-form mb-3">
+                        <label for="withdrawalRejectReason" class="form-label">
+                            <i class="bi bi-x-circle me-2"></i>
+                            Reason for Rejection
+                        </label>
+                        <textarea class="form-control" id="withdrawalRejectReason" rows="3" required 
+                                  placeholder="Enter the reason for rejecting this withdrawal request..."></textarea>
+                    </div>
+                    
+                    <div id="withdrawalApproveNoteDiv" style="display: none;" class="action-form mb-3">
+                        <label for="withdrawalApproveNote" class="form-label">
+                            <i class="bi bi-check-circle me-2"></i>
+                            Admin Note / Transaction ID (Optional)
+                        </label>
+                        <input type="text" class="form-control" id="withdrawalApproveNote" 
+                               placeholder="e.g., Transaction ID, UPI Reference, etc.">
+                        <small class="text-muted">This will be shown to the user</small>
+                    </div>
+                    
+                    <div id="withdrawalActionStatus" class="mt-3"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle me-2"></i>
+                        Cancel
+                    </button>
+                    <button type="button" class="btn btn-danger" id="rejectWithdrawalBtn">
+                        <i class="bi bi-x-circle me-2"></i>
+                        Reject
+                    </button>
+                    <button type="button" class="btn btn-success" id="approveWithdrawalBtn">
+                        <i class="bi bi-check-circle me-2"></i>
+                        Approve
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Deposit Action Modal -->
+    <div class="modal fade" id="depositActionModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Deposit Action</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Request ID:</strong> <small id="depositDetailId" class="text-muted deposit-id-copy"></small> <i class="bi bi-clipboard copy-btn ms-1" data-target="#depositDetailId" title="Copy Request ID"></i></p>
+                            <p><strong>User:</strong> <span id="depositDetailUser"></span> (<small id="depositDetailUserUid" class="text-muted deposit-user-uid-copy"></small> <i class="bi bi-clipboard copy-btn ms-1" data-target="#depositDetailUserUid" title="Copy User UID"></i>)</p>
+                            <p><strong>Amount:</strong> ₹<span id="depositDetailAmount"></span></p>
+                            <p><strong>Requested At:</strong> <span id="depositDetailTimestamp"></span></p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Payment Screenshot</h6>
+                            <img id="depositDetailScreenshot" class="img-fluid rounded" style="max-height: 200px; cursor: pointer;" onclick="window.open(this.src, '_blank')" title="Click to view full size">
+                        </div>
+                    </div>
+                    <hr>
+                    <div id="depositRejectReasonDiv" style="display: none;" class="mb-3">
+                        <label for="depositRejectReason" class="form-label">Reason for Rejection</label>
+                        <textarea class="form-control" id="depositRejectReason" rows="3" required></textarea>
+                    </div>
+                    <div id="depositApproveNoteDiv" style="display: none;" class="mb-3">
+                        <label for="depositApproveNote" class="form-label">Admin Remarks (Optional)</label>
+                        <input type="text" class="form-control" id="depositApproveNote" placeholder="e.g., Payment verified, Amount credited">
+                    </div>
+                    <div id="depositActionStatus" class="mt-2"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="rejectDepositBtn">Reject</button>
+                    <button type="button" class="btn btn-success" id="approveDepositBtn">Approve</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Add New User Modal -->
+    <div class="modal fade" id="addUserModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New User</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addUserForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="newUserFirstName" class="form-label">First Name</label>
+                                <input type="text" class="form-control" id="newUserFirstName" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="newUserLastName" class="form-label">Last Name</label>
+                                <input type="text" class="form-control" id="newUserLastName" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="newUserUsername" class="form-label">Username</label>
+                            <input type="text" class="form-control" id="newUserUsername" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="newUserName" class="form-label">Display Name</label>
+                            <input type="text" class="form-control" id="newUserName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="newUserEmail" class="form-label">Email Address</label>
+                            <input type="email" class="form-control" id="newUserEmail" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="newUserPhone" class="form-label">Phone Number</label>
+                            <input type="tel" class="form-control" id="newUserPhone" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="newUserPassword" class="form-label">Password (min 6 chars)</label>
+                            <input type="password" class="form-control" id="newUserPassword" required minlength="6">
+                        </div>
+                        <div class="mb-3">
+                            <label for="newUserInitialBalance" class="form-label">Initial Balance (₹)</label>
+                            <input type="number" step="any" class="form-control" id="newUserInitialBalance" value="0" min="0">
+                            <small class="text-muted">This will be added to Deposit.</small>
+                        </div>
+                        <div id="addUserStatus" class="mt-2"></div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="saveNewUserBtn">Create User</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Registered Players Modal -->
+    <div class="modal fade" id="registeredPlayersModal" tabindex="-1">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content modal-modern">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="registeredPlayersModalTitle">Registered Players</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Tournament: <strong id="registeredPlayersTournamentName"></strong></p>
+                    <div id="registeredPlayersStatus" class="mb-2"></div>
+                    <div id="registeredPlayersContent">
+                        <div class="table-responsive">
+                            <table class="table table-dark table-sm table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Player Name</th>
+                                        <th>UID</th>
+                                        <th>Email</th>
+                                        <th>In-Game Name</th>
+                                        <th>Team Name</th>
+                                        <th>Team Members</th>
+                                        <th>Phone</th>
+                                        <th>Registered At</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="registeredPlayersTableBody">
+                                    <!-- Player rows will be populated here by the script -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Set Results Modal -->
+    <div class="modal fade" id="setResultsModal" tabindex="-1">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content modal-modern">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="setResultsModalTitle">Set Tournament Results</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Tournament: <strong id="setResultsTournamentName"></strong></p>
+                    <div id="setResultsStatus" class="mb-2"></div>
+                    <div class="results-table-wrapper">
+                        <table class="table table-dark table-sm table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>User</th>
+                                    <th>In-Game Name</th>
+                                    <th style="width: 100px;">Rank</th>
+                                    <th style="width: 100px;">Kills</th>
+                                    <th style="width: 120px;">Prize (₹)</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="setResultsTableBody">
+                                <!-- Player rows will be populated here by the script -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="saveResultsBtn">Save All Results</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Support Chat Modal -->
+    <div class="modal fade" id="adminSupportChatModalEl" tabindex="-1" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-chat-dots me-2"></i>
+                        Support Chat - <span id="adminChatTicketSubjectEl">Ticket Subject</span>
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Ticket Info -->
+                    <div class="ticket-info mb-3 p-3" style="background: var(--primary-bg); border-radius: 8px; border: 1px solid var(--border-color);">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <small class="text-secondary">Ticket ID: <span id="adminChatTicketIdEl" class="text-accent"></span></small>
+                            </div>
+                            <div class="col-md-6 text-end">
+                                <span class="badge" id="adminChatTicketStatusEl">Status</span>
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-md-6">
+                                <small class="text-secondary">User: <span id="adminChatTicketUserEl"></span></small>
+                            </div>
+                            <div class="col-md-6 text-end">
+                                <small class="text-secondary">Priority: <span id="adminChatTicketPriorityEl"></span></small>
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-md-6">
+                                <small class="text-secondary">Category: <span id="adminChatTicketCategoryEl"></span></small>
+                            </div>
+                            <div class="col-md-6 text-end">
+                                <small class="text-secondary">Created: <span id="adminChatTicketCreatedEl"></span></small>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Chat Messages -->
+                    <div class="chat-container" style="height: 400px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 8px; padding: 15px; background: var(--primary-bg);">
+                        <div id="adminChatMessagesEl">
+                            <!-- Messages will be populated here -->
+                        </div>
+                    </div>
+                    <!-- Chat Input -->
+                    <div class="chat-input mt-3">
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="adminChatMessageInputEl" placeholder="Type your response..." maxlength="500">
+                            <button class="btn btn-primary" type="button" id="adminSendChatMessageBtnEl">
+                                <i class="bi bi-send"></i>
+                            </button>
+                        </div>
+                        <small class="text-secondary">Press Enter to send</small>
+                    </div>
+                    <!-- Ticket Actions -->
+                    <div class="ticket-actions mt-3 text-end">
+                        <button class="btn btn-sm btn-success" id="adminResolveTicketBtnEl">
+                            <i class="bi bi-check-circle me-2"></i>Resolve Ticket
+                        </button>
+                        <button class="btn btn-sm btn-warning" id="adminInProgressTicketBtnEl">
+                            <i class="bi bi-clock me-2"></i>Mark In Progress
+                        </button>
+                        <button class="btn btn-sm btn-secondary" id="adminCloseChatBtnEl">
+                            <i class="bi bi-x-circle me-2"></i>Close Chat
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Announcement Modal -->
+    <div class="modal fade" id="announcementModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content modal-modern">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="announcementModalTitle">Add New Announcement</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="announcementForm">
+                        <input type="hidden" id="announcementEditId">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label for="announcementTitle" class="form-label">Announcement Title</label>
+                                <input type="text" class="form-control" id="announcementTitle" required placeholder="Enter announcement title">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="announcementType" class="form-label">Type</label>
+                                <select class="form-select" id="announcementType" required>
+                                    <option value="info">Info</option>
+                                    <option value="warning">Warning</option>
+                                    <option value="success">Success</option>
+                                    <option value="danger">Important</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="announcementPriority" class="form-label">Priority</label>
+                                <select class="form-select" id="announcementPriority" required>
+                                    <option value="low">Low</option>
+                                    <option value="medium" selected>Medium</option>
+                                    <option value="high">High</option>
+                                    <option value="urgent">Urgent</option>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label for="announcementContent" class="form-label">Content</label>
+                                <textarea class="form-control" id="announcementContent" rows="4" required placeholder="Enter announcement content..."></textarea>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="announcementStartDate" class="form-label">
+                                    <i class="bi bi-calendar-event me-2"></i>Start Date & Time
+                                </label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="announcementStartDate" required placeholder="Select start date and time">
+                                    <button class="btn btn-outline-secondary" type="button" id="startDateNowBtn">
+                                        <i class="bi bi-clock"></i> Now
+                                    </button>
+                                </div>
+                                <small class="text-muted">When this announcement should become active</small>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="announcementEndDate" class="form-label">
+                                    <i class="bi bi-calendar-x me-2"></i>End Date & Time (Optional)
+                                </label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="announcementEndDate" placeholder="Select end date and time">
+                                    <button class="btn btn-outline-secondary" type="button" id="endDateClearBtn">
+                                        <i class="bi bi-x-circle"></i> Clear
+                                    </button>
+                                </div>
+                                <small class="text-muted">Leave empty for no expiration</small>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="announcementActive" checked>
+                                    <label class="form-check-label" for="announcementActive">
+                                        Active
+                                    </label>
+                                </div>
+                                <small class="text-muted">Inactive announcements won't be shown to users</small>
+                            </div>
+                        </div>
+                        <div id="announcementStatus" class="mt-3"></div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="saveAnnouncementBtn">Save Announcement</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Code injected by live-server -->
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+
+<!-- Firebase Config -->
+<script src="../firebase-config.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="announcements.js"></script>
+<script src="games.js"></script>
+<script src="challenges.js"></script>
+<script src="admin.js" type="module"></script>
+</body>
+</html>

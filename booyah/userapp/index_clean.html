@@ -1,0 +1,2054 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gaming Tournament Platform</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
+    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="announcements.css">
+    <link rel="stylesheet" href="challenges.css">
+</head>
+
+<body>
+     <!-- Firebase Security Rules Warning -->
+    <div id="securityWarning" style="display: none;">
+        <i class="bi bi-exclamation-triangle-fill"></i> <strong>Security Alert:</strong> Your database rules are insecure (public). Anyone can read/write data.
+        <a href="https://firebase.google.com/docs/database/security" target="_blank" rel="noopener noreferrer">Learn how to secure rules.</a>
+        <button onclick="this.parentElement.style.display='none'">Dismiss</button>
+    </div>
+
+    <!-- Header -->
+    <header class="app-header">
+        <div class="header-left">
+            <button class="menu-toggle-btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#mainSidebar" aria-controls="mainSidebar">
+                <i class="bi bi-list"></i>
+            </button>
+            <!-- Challenge Logo -->
+            <div class="challenge-logo">
+                <svg width="35" height="35" viewBox="0 0 35 35" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="35" height="35" rx="17.5" fill="#1E293B"/>
+                    <path d="M10 12L17.5 8L25 12V20L17.5 24L10 20V12Z" fill="#94A3B8"/>
+                    <path d="M17.5 8L17.5 24" stroke="#E2E8F0" stroke-width="1.5"/>
+                    <path d="M10 12L25 12" stroke="#E2E8F0" stroke-width="1.5"/>
+                    <path d="M10 20L25 20" stroke="#E2E8F0" stroke-width="1.5"/>
+                    <circle cx="17.5" cy="16" r="2" fill="#F59E0B"/>
+                    <path d="M15 14L20 18M20 14L15 18" stroke="#1E293B" stroke-width="1" stroke-linecap="round"/>
+                </svg>
+            </div>
+            <h1 class="header-title ms-1" id="mainPageTitle">Home</h1>
+        </div>
+        <div class="header-right">
+            <span class="user-email-header" id="mainUserEmailShort"></span>
+            <button class="btn btn-sm btn-outline-danger" id="mainLogoutBtnHeader"><i class="bi bi-box-arrow-right"></i> Logout</button>
+        </div>
+    </header>
+
+    <!-- Announcements Section -->
+    <div id="announcements-container" class="announcements-container" style="display: none;">
+        <div class="container">
+            <div class="announcements-header d-flex justify-content-between align-items-center mb-3">
+                <h5 class="mb-0">
+                    <i class="bi bi-megaphone me-2"></i>
+                    Important Announcements
+                </h5>
+                <button class="btn btn-sm btn-outline-secondary" id="closeAnnouncementsBtn">
+                    <i class="bi bi-x"></i>
+                </button>
+            </div>
+            <div id="announcementsList" class="announcements-list">
+                <!-- Announcements will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div id="globalLoaderEl"> <div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div> </div>
+
+        <!-- Login Section -->
+        <section id="login-section" class="section">
+            <div class="auth-container">
+                <div class="auth-card">
+                        <!-- Login Form -->
+                    <form id="emailLoginForm" class="auth-form">
+                        <div class="auth-header">
+                            <div class="auth-logo">
+                                <i class="bi bi-controller"></i>
+                            </div>
+                            <h1 class="auth-title">Welcome Back</h1>
+                            <p class="auth-subtitle">Sign in to your gaming account</p>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="loginEmailInputEl" class="form-label">Email Address</label>
+                            <input type="email" class="form-input" id="loginEmailInputEl" placeholder="Enter your email" required>
+                            <i class="bi bi-envelope input-icon"></i>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="loginPasswordInputEl" class="form-label">Password</label>
+                            <input type="password" class="form-input" id="loginPasswordInputEl" placeholder="Enter your password" required>
+                            <i class="bi bi-lock input-icon"></i>
+                        </div>
+                        
+                        <div id="loginStatusMessageEl" class="status-message" style="display: none;"></div>
+                        
+                        <button type="button" class="auth-btn" id="loginEmailBtnEl">
+                            <span class="btn-text">Sign In</span>
+                        </button>
+                        
+                        <div class="auth-footer">
+                            <button type="button" class="auth-toggle" id="showSignupToggleBtnEl">
+                                Need an account? Sign Up
+                            </button>
+                            <br>
+                            <a href="#" id="forgotPasswordLinkEl" class="forgot-password">
+                                Forgot Password?
+                            </a>
+                        </div>
+                        </form>
+
+                        <!-- Signup Form (Initially Hidden) -->
+                    <form id="emailSignupForm" class="auth-form" style="display: none;">
+                        <div class="auth-header">
+                            <div class="auth-logo">
+                                <i class="bi bi-person-plus"></i>
+                            </div>
+                            <h1 class="auth-title">Join the Game</h1>
+                            <p class="auth-subtitle">Create your gaming profile</p>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                    <label for="signupFirstNameInputEl" class="form-label">First Name</label>
+                                <input type="text" class="form-input" id="signupFirstNameInputEl" placeholder="First name" required>
+                                <i class="bi bi-person input-icon"></i>
+                                </div>
+                            <div class="form-group">
+                                    <label for="signupLastNameInputEl" class="form-label">Last Name</label>
+                                <input type="text" class="form-input" id="signupLastNameInputEl" placeholder="Last name" required>
+                                <i class="bi bi-person input-icon"></i>
+                                </div>
+                            </div>
+                            
+                        <div class="form-group">
+                                <label for="signupUsernameInputEl" class="form-label">Username</label>
+                            <input type="text" class="form-input" id="signupUsernameInputEl" placeholder="Choose username" required>
+                            <i class="bi bi-at input-icon"></i>
+                            </div>
+                            
+                        <div class="form-group">
+                            <label for="signupEmailInputEl" class="form-label">Email Address</label>
+                            <input type="email" class="form-input" id="signupEmailInputEl" placeholder="Enter your email" required>
+                            <i class="bi bi-envelope input-icon"></i>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="signupPhoneInputEl" class="form-label">Phone Number</label>
+                            <input type="tel" class="form-input" id="signupPhoneInputEl" placeholder="Enter phone number" required>
+                            <i class="bi bi-phone input-icon"></i>
+                    </div>
+                        
+                        <div class="form-group">
+                            <label for="signupPasswordInputEl" class="form-label">Password</label>
+                            <input type="password" class="form-input" id="signupPasswordInputEl" placeholder="Create password" required minlength="6">
+                            <i class="bi bi-lock input-icon"></i>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="signupConfirmPasswordInputEl" class="form-label">Confirm Password</label>
+                            <input type="password" class="form-input" id="signupConfirmPasswordInputEl" placeholder="Confirm password" required>
+                            <i class="bi bi-shield-lock input-icon"></i>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="signupReferralCodeInputEl" class="form-label">Referral Code (Optional)</label>
+                            <input type="text" class="form-input" id="signupReferralCodeInputEl" placeholder="Enter referral code">
+                            <i class="bi bi-gift input-icon"></i>
+                        </div>
+                        
+                        <div id="signupStatusMessageEl" class="status-message" style="display: none;"></div>
+                        
+                        <button type="button" class="auth-btn" id="signupEmailBtnEl">
+                            <span class="btn-text">Create Account</span>
+                        </button>
+                        
+                        <div class="auth-footer">
+                            <button type="button" class="auth-toggle" id="showLoginToggleBtnEl">
+                                Already have account? Sign In
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- Home Section -->
+        <section id="home-section" class="section">
+            <!-- Simple Banner Slider -->
+            <div class="simple-banner-section">
+                <div class="simple-swiper-container" id="promotionSliderEl">
+                    <div class="swiper-wrapper placeholder-glow">
+                        <div class="swiper-slide">
+                            <div class="simple-banner-card placeholder-glow">
+                                <div class="banner-image-placeholder"></div>
+                                <div class="banner-content-placeholder">
+                                    <div class="title-placeholder"></div>
+                                    <div class="description-placeholder"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="swiper-pagination"></div>
+                </div>
+            </div>
+            
+            <!-- Simple Games List -->
+            <div class="simple-games-section">
+                <div class="simple-section-header">
+                    <h3 class="section-title">
+                        <i class="bi bi-controller"></i>
+                        Games
+                    </h3>
+                </div>
+                <div class="simple-games-list" id="gamesListEl">
+                    <!-- Placeholder Game Items -->
+                    <div class="simple-game-item placeholder-glow">
+                        <div class="game-icon-placeholder"></div>
+                        <div class="game-name-placeholder"></div>
+                    </div>
+                    <div class="simple-game-item placeholder-glow">
+                        <div class="game-icon-placeholder"></div>
+                        <div class="game-name-placeholder"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tournaments Section -->
+        <section id="tournaments-section" class="section">
+            <div class="tournament-tabs"> <button class="tab-item active" data-status="upcoming"><i class="bi bi-calendar-event-fill"></i> Upcoming</button> <button class="tab-item" data-status="ongoing"><i class="bi bi-play-circle-fill"></i> Ongoing</button> <button class="tab-item" data-status="completed"><i class="bi bi-trophy-fill"></i> Results</button> </div>
+            <div id="tournamentsListContainerEl" class="mt-3 placeholder-glow"> <div class="tournament-card placeholder-glow mb-3"> <span class="placeholder col-6" style="height: 18px;"></span> <span class="placeholder col-12 mt-2" style="height: 24px;"></span> <span class="placeholder col-10 mt-2" style="height: 16px;"></span> <div class="d-flex justify-content-between mt-3"> <span class="placeholder col-6" style="height: 30px; border-radius: 6px;"></span> <span class="placeholder col-4" style="height: 30px; border-radius: 6px;"></span> </div> </div> </div>
+            <p id="noTournamentsMessageEl" class="text-secondary text-center mt-4" style="display: none;">No tournaments found.</p>
+        </section>
+
+        <!-- Challenges Section -->
+        <section id="challenges-section" class="section">
+            <div class="challenges-header mb-4">
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                    <div class="header-content">
+                        <h2 class="section-title mb-2">
+                            <i class="bi bi-sword"></i> Challenges
+                        </h2>
+                        <p class="section-subtitle text-muted">Compete 1v1 with other players for real prizes</p>
+                    </div>
+                    <div class="header-actions">
+                        <button class="btn btn-primary create-challenge-btn" data-bs-toggle="modal" data-bs-target="#createChallengeModal" id="createChallengeBtn">
+                            <i class="bi bi-plus-circle"></i>
+                            <span>Create Challenge</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Challenge Tabs -->
+            <div class="challenge-tabs mb-4">
+                <button class="challenge-tab active" data-status="open">
+                    <i class="bi bi-hourglass-split"></i> Open Challenges
+                </button>
+                <button class="challenge-tab" data-status="accepted">
+                    <i class="bi bi-check-circle"></i> Accepted
+                </button>
+                <button class="challenge-tab" data-status="completed">
+                    <i class="bi bi-trophy"></i> Completed
+                </button>
+            </div>
+            
+            <div id="challengesStatus" class="mb-3"></div>
+            
+            <div class="challenges-container">
+                <div class="challenges-grid" id="challengesList">
+                    <!-- Loading placeholders -->
+                    <div class="challenge-card loading-placeholder">
+                        <div class="challenge-header-placeholder"></div>
+                        <div class="challenge-content-placeholder">
+                            <div class="title-placeholder"></div>
+                            <div class="content-placeholder"></div>
+                        </div>
+                    </div>
+                    <div class="challenge-card loading-placeholder">
+                        <div class="challenge-header-placeholder"></div>
+                        <div class="challenge-content-placeholder">
+                            <div class="title-placeholder"></div>
+                            <div class="content-placeholder"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Wallet Section -->
+        <section id="wallet-section" class="section">
+            <!-- Compact Mobile Wallet Header -->
+            <div class="compact-wallet-header">
+                <div class="wallet-main-info">
+                    <div class="wallet-title-section">
+                        <h2 class="wallet-title">
+                            <i class="bi bi-wallet2"></i>
+                            My Wallet
+                        </h2>
+                        <p class="wallet-subtitle">Manage your funds and track transactions</p>
+                    </div>
+                    <div class="wallet-header-icon">
+                        <i class="bi bi-credit-card"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Compact Balance Cards -->
+            <div class="compact-balance-cards">
+                <div class="compact-balance-card deposit">
+                    <div class="balance-card-content">
+                        <div class="balance-icon">
+                            <i class="bi bi-bank"></i>
+                        </div>
+                        <div class="balance-info">
+                            <span class="balance-label">Deposit Balance</span>
+                            <span class="balance-amount" id="walletTotalBalanceEl">₹0</span>
+                        </div>
+                    </div>
+                    <button class="compact-balance-action" id="allTransactionsBtnEl">
+                        <i class="bi bi-clock-history"></i>
+                        <span>History</span>
+                    </button>
+                </div>
+                
+                <div class="compact-balance-card winning">
+                    <div class="balance-card-content">
+                        <div class="balance-icon">
+                            <i class="bi bi-trophy"></i>
+                        </div>
+                        <div class="balance-info">
+                            <span class="balance-label">Winning Cash</span>
+                            <span class="balance-amount" id="walletWinningCashEl">₹0</span>
+                        </div>
+                    </div>
+                    <button class="compact-balance-action" id="withdrawBtnEl">
+                        <i class="bi bi-cash-coin"></i>
+                        <span>Withdraw</span>
+                    </button>
+                </div>
+                
+                <div class="compact-balance-card bonus">
+                    <div class="balance-card-content">
+                        <div class="balance-icon">
+                            <i class="bi bi-gift"></i>
+                        </div>
+                        <div class="balance-info">
+                            <span class="balance-label">Bonus Cash</span>
+                            <span class="balance-amount" id="walletBonusCashEl">₹0</span>
+                        </div>
+                    </div>
+                    <div class="compact-balance-info">
+                        <small>Referral rewards</small>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Compact Quick Actions -->
+            <div class="compact-wallet-actions">
+                <div class="actions-row">
+                    <button class="compact-wallet-action" id="addAmountWalletBtnEl">
+                        <i class="bi bi-plus-circle"></i>
+                        <span>Add Amount</span>
+                    </button>
+                    <button class="compact-wallet-action" id="sendMoneyBtnEl">
+                        <i class="bi bi-arrow-up-circle"></i>
+                        <span>Send Money</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Compact Wallet Stats -->
+            <div class="compact-wallet-stats">
+                <div class="compact-stats-section-header">
+                    <h3 class="stats-section-title">
+                        <i class="bi bi-graph-up"></i>
+                        Wallet Overview
+                    </h3>
+                </div>
+                <div class="compact-stats-grid">
+                    <div class="compact-stat-item">
+                        <i class="bi bi-wallet2"></i>
+                        <span class="compact-stat-value" id="totalBalanceEl">₹0</span>
+                        <span class="compact-stat-label">Total Balance</span>
+                    </div>
+                    <div class="compact-stat-item">
+                        <i class="bi bi-calendar-check"></i>
+                        <span class="compact-stat-value" id="monthlyEarningsEl">₹0</span>
+                        <span class="compact-stat-label">This Month</span>
+                    </div>
+                    <div class="compact-stat-item">
+                        <i class="bi bi-arrow-up-right"></i>
+                        <span class="compact-stat-value" id="totalWithdrawalsEl">₹0</span>
+                        <span class="compact-stat-label">Total Withdrawn</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Compact Recent Transactions -->
+            <div class="compact-transactions">
+                <div class="compact-transactions-header">
+                    <h3 class="transactions-title">
+                        <i class="bi bi-clock-history"></i>
+                        Recent Transactions
+                    </h3>
+                    <div class="transactions-count">
+                        <span id="transactionsCountEl">0</span> transactions
+                    </div>
+                </div>
+                
+                <div class="compact-transactions-list" id="recentTransactionsListEl">
+                    <!-- Transaction placeholders -->
+                    <div class="compact-transaction-placeholder">
+                        <div class="placeholder-item">
+                            <div class="placeholder-icon"></div>
+                            <div class="placeholder-content">
+                                <div class="placeholder-title"></div>
+                                <div class="placeholder-subtitle"></div>
+                            </div>
+                            <div class="placeholder-amount"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="noTransactionsMessageEl" class="compact-empty-transactions" style="display: none;">
+                    <div class="empty-icon">
+                        <i class="bi bi-receipt"></i>
+                    </div>
+                    <h4 class="empty-title">No Transactions Yet</h4>
+                    <p class="empty-subtitle">Your transaction history will appear here</p>
+                </div>
+            </div>
+        </section>
+
+
+
+        <!-- Earnings Section -->
+        <section id="earnings-section" class="section">
+            <!-- Compact Mobile Earnings Header -->
+            <div class="compact-earnings-header">
+                <div class="earnings-main-info">
+                    <div class="earnings-title-section">
+                        <h2 class="earnings-title">
+                            <i class="bi bi-graph-up"></i>
+                            My Earnings
+                        </h2>
+                        <p class="earnings-subtitle">Track your tournament winnings and referral rewards</p>
+                    </div>
+                    <div class="earnings-header-icon">
+                        <i class="bi bi-coin"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Compact Stats Row -->
+            <div class="compact-earnings-stats">
+                <div class="compact-earnings-stat">
+                    <i class="bi bi-trophy"></i>
+                    <span class="compact-earnings-value" id="earningsTotalEl">₹0</span>
+                    <span class="compact-earnings-label">Tournament Winnings</span>
+                </div>
+                <div class="compact-earnings-stat">
+                    <i class="bi bi-people"></i>
+                    <span class="compact-earnings-value" id="earningsReferralEl">₹0</span>
+                    <span class="compact-earnings-label">Referral Earnings</span>
+                </div>
+                <div class="compact-earnings-stat">
+                    <i class="bi bi-calculator"></i>
+                    <span class="compact-earnings-value" id="netEarningsEl">₹0</span>
+                    <span class="compact-earnings-label">Net Earnings</span>
+                </div>
+            </div>
+            
+            <!-- Compact Quick Actions -->
+            <div class="compact-earnings-actions">
+                <div class="actions-row">
+                    <div class="compact-earnings-action" data-section="referral-section">
+                        <i class="bi bi-clock-history"></i>
+                        <span>Referral History</span>
+                    </div>
+                    <div class="compact-earnings-action" data-section="tournaments-section">
+                        <i class="bi bi-trophy"></i>
+                        <span>My Tournaments</span>
+                    </div>
+                    <div class="compact-earnings-action" data-section="wallet-section">
+                        <i class="bi bi-wallet2"></i>
+                        <span>Withdraw</span>
+                    </div>
+                    <div class="compact-earnings-action" data-section="stats-section">
+                        <i class="bi bi-graph-up"></i>
+                        <span>Analytics</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Compact Earnings History -->
+            <div class="compact-earnings-history">
+                <div class="compact-earnings-history-header">
+                    <h3 class="history-title">
+                        <i class="bi bi-clock-history"></i>
+                        Recent Earnings
+                    </h3>
+                    <div class="history-filter">
+                        <button class="filter-btn active" data-filter="all">All</button>
+                        <button class="filter-btn" data-filter="tournaments">Tournaments</button>
+                        <button class="filter-btn" data-filter="referrals">Referrals</button>
+                    </div>
+                </div>
+                
+                <div class="compact-earnings-list" id="earningsHistoryList">
+                    <!-- Earnings history items will be populated here -->
+                    <div class="compact-earnings-placeholder">
+                        <div class="placeholder-item">
+                            <div class="placeholder-icon"></div>
+                            <div class="placeholder-content">
+                                <div class="placeholder-title"></div>
+                                <div class="placeholder-subtitle"></div>
+                            </div>
+                            <div class="placeholder-amount"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Referral Section -->
+        <section id="referral-section" class="section">
+            <!-- Compact Mobile Referral Header -->
+            <div class="compact-referral-header">
+                <div class="referral-main-info">
+                    <div class="referral-title-section">
+                        <h2 class="referral-title">
+                            <i class="bi bi-person-plus"></i>
+                            Refer & Earn
+                        </h2>
+                        <p class="referral-subtitle">Share your code and earn rewards</p>
+                    </div>
+                    <div class="referral-header-icon">
+                        <i class="bi bi-gift"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Compact Stats Row -->
+            <div class="compact-referral-stats">
+                <div class="compact-referral-stat">
+                    <i class="bi bi-coin"></i>
+                    <span class="compact-referral-value" id="referralEarningsEl">₹0</span>
+                    <span class="compact-referral-label">Total Earnings</span>
+                </div>
+                <div class="compact-referral-stat">
+                    <i class="bi bi-people"></i>
+                    <span class="compact-referral-value" id="referralCountEl">0</span>
+                    <span class="compact-referral-label">Successful Referrals</span>
+                </div>
+            </div>
+            
+            <!-- Compact Referral Code Section -->
+            <div class="compact-referral-code">
+                <div class="compact-referral-code-header">
+                    <h3 class="referral-code-title">
+                        <i class="bi bi-link-45deg"></i>
+                        Your Referral Code
+                    </h3>
+                    <button class="btn-copy-code" id="copyReferralCodeBtn">
+                        <i class="bi bi-clipboard"></i>
+                        Copy
+                    </button>
+                </div>
+                <div class="compact-referral-code-display" id="userReferralCodeEl">
+                    <span class="placeholder col-4"></span>
+                </div>
+                <p class="referral-code-subtitle">Share this code with friends to earn rewards!</p>
+                
+                <!-- Compact Share Options -->
+                <div class="compact-share-options">
+                    <div class="share-options-row">
+                        <a href="#" class="compact-share-btn whatsapp" id="shareWhatsappBtn">
+                            <i class="bi bi-whatsapp"></i>
+                            <span>WhatsApp</span>
+                        </a>
+                        <a href="#" class="compact-share-btn telegram" id="shareTelegramBtn">
+                            <i class="bi bi-telegram"></i>
+                            <span>Telegram</span>
+                        </a>
+                    </div>
+                    <div class="share-options-row">
+                        <button class="compact-share-btn copy" id="shareCopyBtn">
+                            <i class="bi bi-clipboard"></i>
+                            <span>Copy Link</span>
+                        </button>
+                        <button class="compact-share-btn more" id="shareMoreBtn">
+                            <i class="bi bi-share"></i>
+                            <span>More</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Compact Referral History -->
+            <div class="compact-referral-history">
+                <div class="compact-referral-history-header">
+                    <h3 class="history-title">
+                        <i class="bi bi-clock-history"></i>
+                        Referral History
+                    </h3>
+                    <button class="btn-refresh" id="refreshReferralHistoryBtn">
+                        <i class="bi bi-arrow-clockwise"></i>
+                        Refresh
+                    </button>
+                </div>
+                
+                <div class="compact-referral-history-list" id="referralHistoryListEl">
+                    <!-- Referral history items will be populated here -->
+                    <div class="compact-referral-history-placeholder">
+                        <div class="placeholder-item">
+                            <div class="placeholder-icon"></div>
+                            <div class="placeholder-content">
+                                <div class="placeholder-title"></div>
+                                <div class="placeholder-subtitle"></div>
+                            </div>
+                            <div class="placeholder-amount"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Empty State -->
+                <div id="noReferralHistoryEl" class="compact-empty-referral-state" style="display: none;">
+                    <i class="bi bi-person-plus"></i>
+                    <h4>No Referrals Yet</h4>
+                    <p>You haven't referred anyone yet.<br>Share your code to start earning rewards!</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Leaderboard Section -->
+        <section id="leaderboard-section" class="section">
+            <div class="leaderboard-container">
+                <!-- Leaderboard Header -->
+                <div class="leaderboard-header">
+                    <div class="leaderboard-header-content">
+                        <div class="leaderboard-title-section">
+                            <h2 class="leaderboard-title">
+                                <i class="bi bi-trophy-fill"></i>
+                                Leaderboard
+                            </h2>
+                            <p class="leaderboard-subtitle">See who's on top</p>
+                        </div>
+                        <div class="leaderboard-header-icon">
+                            <i class="bi bi-award-fill"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Leaderboard Tabs -->
+                <div class="leaderboard-tabs">
+                    <button class="tab-item active" data-leaderboard-type="earnings"><i class="bi bi-coin"></i> Top Earners</button>
+                    <button class="tab-item" data-leaderboard-type="wins"><i class="bi bi-trophy"></i> Most Wins</button>
+                    <button class="tab-item" data-leaderboard-type="tournaments"><i class="bi bi-calendar-event"></i> Most Tournaments</button>
+                </div>
+                
+                <!-- Leaderboard List -->
+                <div id="leaderboardListEl" class="leaderboard-list">
+                    <!-- Leaderboard items will be populated here -->
+                    <div class="leaderboard-placeholder">
+                        <div class="placeholder-item">
+                            <div class="placeholder-icon"></div>
+                            <div class="placeholder-content">
+                                <div class="placeholder-title"></div>
+                                <div class="placeholder-subtitle"></div>
+                            </div>
+                            <div class="placeholder-amount"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <p id="noLeaderboardMessageEl" class="text-secondary text-center mt-4" style="display: none;">No leaderboard data available.</p>
+            </div>
+        </section>
+
+        <!-- Stats Section -->
+        <section id="stats-section" class="section">
+            <!-- Compact Mobile Stats Header -->
+            <div class="compact-stats-header">
+                <div class="stats-main-info">
+                    <div class="stats-title-section">
+                        <h2 class="stats-title">
+                            <i class="bi bi-bar-chart"></i>
+                            My Stats
+                        </h2>
+                        <p class="stats-subtitle">Track your performance and earnings</p>
+                    </div>
+                    <div class="stats-header-icon">
+                        <i class="bi bi-graph-up"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Compact Performance Stats -->
+            <div class="compact-performance-stats">
+                <div class="compact-stats-section-header">
+                    <h3 class="stats-section-title">
+                        <i class="bi bi-speedometer2"></i>
+                        Performance Overview
+                    </h3>
+                </div>
+                <div class="compact-stats-grid">
+                    <div class="compact-stat-item">
+                        <i class="bi bi-calendar-event"></i>
+                        <span class="compact-stat-value" id="statsTournamentsJoined">0</span>
+                        <span class="compact-stat-label">Tournaments Joined</span>
+                        <div class="compact-stat-trend positive">
+                            <i class="bi bi-arrow-up"></i>
+                            <span>Active player</span>
+                        </div>
+                    </div>
+                    <div class="compact-stat-item">
+                        <i class="bi bi-controller"></i>
+                        <span class="compact-stat-value" id="statsMatchesPlayed">0</span>
+                        <span class="compact-stat-label">Matches Played</span>
+                        <div class="compact-stat-trend positive">
+                            <i class="bi bi-arrow-up"></i>
+                            <span>Experience gained</span>
+                        </div>
+                    </div>
+                    <div class="compact-stat-item">
+                        <i class="bi bi-trophy"></i>
+                        <span class="compact-stat-value" id="statsMatchesWon">0</span>
+                        <span class="compact-stat-label">Matches Won</span>
+                        <div class="compact-stat-trend positive">
+                            <i class="bi bi-arrow-up"></i>
+                            <span>Victories</span>
+                        </div>
+                    </div>
+                    <div class="compact-stat-item">
+                        <i class="bi bi-percent"></i>
+                        <span class="compact-stat-value" id="statsWinRate">0%</span>
+                        <span class="compact-stat-label">Win Rate</span>
+                        <div class="compact-win-rate-progress">
+                            <div class="progress" style="height: 8px;">
+                                <div class="progress-bar" id="statsWinRateProgress" role="progressbar" style="width: 0%"></div>
+                            </div>
+                            <div class="win-rate-label">Success rate</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Compact Financial Stats -->
+            <div class="compact-financial-stats">
+                <div class="compact-stats-section-header">
+                    <h3 class="stats-section-title">
+                        <i class="bi bi-coin"></i>
+                        Financial Overview
+                    </h3>
+                </div>
+                <div class="compact-stats-grid">
+                    <div class="compact-stat-item">
+                        <i class="bi bi-trophy"></i>
+                        <span class="compact-stat-value" id="statsTournamentWinnings">₹0</span>
+                        <span class="compact-stat-label">Tournament Winnings</span>
+                        <div class="compact-stat-trend positive">
+                            <i class="bi bi-arrow-up"></i>
+                            <span>Prize money</span>
+                        </div>
+                    </div>
+                    <div class="compact-stat-item">
+                        <i class="bi bi-people"></i>
+                        <span class="compact-stat-value" id="statsReferralWinnings">₹0</span>
+                        <span class="compact-stat-label">Referral Winnings</span>
+                        <div class="compact-stat-trend positive">
+                            <i class="bi bi-arrow-up"></i>
+                            <span>Referral rewards</span>
+                        </div>
+                    </div>
+                    <div class="compact-stat-item">
+                        <i class="bi bi-cash-stack"></i>
+                        <span class="compact-stat-value" id="statsEntryFees">₹0</span>
+                        <span class="compact-stat-label">Entry Fees</span>
+                        <div class="compact-stat-trend neutral">
+                            <i class="bi bi-dash"></i>
+                            <span>Investment</span>
+                        </div>
+                    </div>
+                    <div class="compact-stat-item">
+                        <i class="bi bi-calculator"></i>
+                        <span class="compact-stat-value" id="statsNetEarnings">₹0</span>
+                        <span class="compact-stat-label">Net Earnings</span>
+                        <div class="compact-stat-trend positive">
+                            <i class="bi bi-arrow-up"></i>
+                            <span>Profit</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Compact Quick Summary -->
+            <div class="compact-quick-summary">
+                <div class="compact-summary-header">
+                    <h3 class="stats-section-title">
+                        <i class="bi bi-lightning-charge"></i>
+                        Quick Summary
+                    </h3>
+                </div>
+                <div class="compact-summary-content">
+                    <div class="compact-summary-item">
+                        <span class="summary-label">Best Performance:</span>
+                        <span class="summary-value" id="statsBestPerformance">-</span>
+                    </div>
+                    <div class="compact-summary-item">
+                        <span class="summary-label">Total Play Time:</span>
+                        <span class="summary-value" id="statsTotalPlayTime">-</span>
+                    </div>
+                    <div class="compact-summary-item">
+                        <span class="summary-label">Favorite Game:</span>
+                        <span class="summary-value" id="statsFavoriteGame">-</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+         <!-- Debug Stats Section (for testing) -->
+         <section id="debug-stats-section" class="section" style="display: none;">
+             <h2 class="section-title">Debug Stats</h2>
+             <div class="custom-card">
+                 <h6 class="mb-3">Test Stats Updates</h6>
+                 <div class="row g-2">
+                     <div class="col-6">
+                         <button class="btn btn-sm btn-primary w-100" onclick="updateUserStats('tournamentsJoined', 1)">
+                             +1 Tournament
+                         </button>
+                     </div>
+                     <div class="col-6">
+                         <button class="btn btn-sm btn-success w-100" onclick="updateUserStats('matchesPlayed', 1)">
+                             +1 Match Played
+                         </button>
+                     </div>
+                     <div class="col-6">
+                         <button class="btn btn-sm btn-warning w-100" onclick="updateUserStats('matchesWon', 1)">
+                             +1 Match Won
+                         </button>
+                     </div>
+                     <div class="col-6">
+                         <button class="btn btn-sm btn-info w-100" onclick="updateUserStats('entryFeesPaid', 50)">
+                             +₹50 Entry Fee
+                         </button>
+                     </div>
+                 </div>
+                 <small class="text-muted mt-2 d-block">Use these buttons to test stats updates</small>
+                 <hr>
+                 <button class="btn btn-sm btn-warning w-100" onclick="syncTournamentsJoined()">
+                     Sync Tournaments Joined
+                 </button>
+                 <button class="btn btn-sm btn-danger w-100" onclick="fixMatchesPlayed()">
+                     Fix Matches Played
+                 </button>
+                 <small class="text-muted mt-2 d-block">This will recalculate stats based on actual joined tournaments (excluding canceled ones for matches played)</small>
+             </div>
+         </section>
+
+         <!-- Profile Section -->
+        <section id="profile-section" class="section">
+            <!-- Compact Mobile Profile Header -->
+            <div class="compact-profile-header">
+                <div class="profile-main-info">
+                    <div class="profile-avatar-container">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNzAiIGhlaWdodD0iNzAiIHZpZXdCb3g9IjAgMCA3MCA3MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMzUiIGN5PSIzNSIgcj0iMzUiIGZpbGw9IiMzMDM2M0QiLz4KPHN2ZyB4PSIyMCIgeT0iMjAiIHdpZHRoPSIzMCIgaGVpZ2h0PSIzMCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjOEE5NDlFIj4KPHBhdGggZD0iTTEyIDEyYzIuMjEgMCA0LTEuNzkgNC00cy0xLjc5LTQtNC00LTQgMS43OS00IDQgMS43OSA0IDQgNHptMCAyYy0yLjY3IDAtOCAxLjM0LTggNHYyaDE2di0yYzAtMi42Ni01LjMzLTQtOC00eiIvPgo8L3N2Zz4KPC9zdmc+" alt="Avatar" class="profile-avatar" id="profileAvatarEl">
+                        <button class="edit-avatar-btn" id="editProfileBtnEl">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                    </div>
+                    <div class="profile-info">
+                        <h2 class="profile-name" id="profileNameEl">User Name</h2>
+                        <p class="profile-email" id="profileEmailEl">user@example.com</p>
+                        <div class="profile-status">
+                            <span class="status-indicator online">
+                                <i class="bi bi-circle-fill"></i>
+                                Online
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Compact Stats Row -->
+                <div class="compact-stats-row">
+                    <div class="compact-stat">
+                        <i class="bi bi-trophy"></i>
+                        <span class="compact-stat-value" id="profileTotalMatchesEl">0</span>
+                        <span class="compact-stat-label">Matches</span>
+                    </div>
+                    <div class="compact-stat">
+                        <i class="bi bi-award"></i>
+                        <span class="compact-stat-value" id="profileWonMatchesEl">0</span>
+                        <span class="compact-stat-label">Won</span>
+                    </div>
+                    <div class="compact-stat">
+                        <i class="bi bi-coin"></i>
+                        <span class="compact-stat-value" id="profileTotalEarningsEl">₹0</span>
+                        <span class="compact-stat-label">Earnings</span>
+                    </div>
+                    <div class="compact-stat">
+                        <i class="bi bi-calendar-event"></i>
+                        <span class="compact-stat-value" id="profileTournamentsJoinedEl">0</span>
+                        <span class="compact-stat-label">Tournaments</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Compact Quick Actions -->
+            <div class="compact-quick-actions">
+                <div class="actions-row">
+                    <div class="compact-action" data-section="earnings-section">
+                        <i class="bi bi-coin"></i>
+                        <span>Earnings</span>
+                    </div>
+                    <div class="compact-action" data-section="referral-section">
+                        <i class="bi bi-person-plus"></i>
+                        <span>Refer & Earn</span>
+                    </div>
+                    <div class="compact-action" data-section="stats-section">
+                        <i class="bi bi-graph-up"></i>
+                        <span>Stats</span>
+                    </div>
+                    <div class="compact-action" data-section="wallet-section">
+                        <i class="bi bi-wallet2"></i>
+                        <span>Wallet</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Compact Menu Section -->
+            <div class="compact-menu-section">
+                <!-- Settings Row -->
+                <div class="compact-menu-row">
+                    <div class="compact-menu-item">
+                        <i class="bi bi-bell"></i>
+                        <span>Notifications</span>
+                        <div class="toggle-switch">
+                            <input type="checkbox" id="notificationSwitchEl" checked>
+                            <label for="notificationSwitchEl"></label>
+                        </div>
+                    </div>
+                    <div class="compact-menu-item" data-policy="privacy">
+                        <i class="bi bi-shield-lock"></i>
+                        <span>Privacy</span>
+                        <i class="bi bi-chevron-right"></i>
+                    </div>
+                </div>
+                
+                <!-- Legal Row -->
+                <div class="compact-menu-row">
+                    <div class="compact-menu-item" data-policy="terms">
+                        <i class="bi bi-file-text"></i>
+                        <span>Terms</span>
+                        <i class="bi bi-chevron-right"></i>
+                    </div>
+                    <div class="compact-menu-item" data-policy="refund">
+                        <i class="bi bi-arrow-repeat"></i>
+                        <span>Refund</span>
+                        <i class="bi bi-chevron-right"></i>
+                    </div>
+                </div>
+                
+                <!-- Support Row -->
+                <div class="compact-menu-row">
+                    <div class="compact-menu-item" data-policy="fairPlay">
+                        <i class="bi bi-patch-check"></i>
+                        <span>Fair Play</span>
+                        <i class="bi bi-chevron-right"></i>
+                    </div>
+                    <div class="compact-menu-item logout-item" id="logoutProfileBtnEl">
+                        <i class="bi bi-box-arrow-right"></i>
+                        <span>Logout</span>
+                        <i class="bi bi-chevron-right"></i>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Support Section -->
+        <section id="support-section" class="section">
+            <!-- Mobile App Style Header -->
+            <div class="mobile-app-header">
+                <div class="header-content">
+                    <div class="header-icon">
+                        <i class="bi bi-headset"></i>
+                    </div>
+                    <div class="header-text">
+                        <h1 class="app-title">Support</h1>
+                        <p class="app-subtitle">Get help anytime</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Mobile App Style Stats -->
+            <div class="mobile-stats-container">
+                <div class="stat-item">
+                    <div class="stat-icon-wrapper active">
+                        <i class="bi bi-clock"></i>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-number" id="supportActiveTicketsEl">0</span>
+                        <span class="stat-label">Active</span>
+                    </div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-icon-wrapper resolved">
+                        <i class="bi bi-check-circle"></i>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-number" id="supportResolvedTicketsEl">0</span>
+                        <span class="stat-label">Resolved</span>
+                    </div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-icon-wrapper response">
+                        <i class="bi bi-lightning"></i>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-number">< 2h</span>
+                        <span class="stat-label">Response</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Mobile App Style Create Ticket -->
+            <div class="mobile-create-ticket">
+                <div class="create-ticket-content">
+                    <div class="ticket-icon">
+                        <i class="bi bi-plus-circle"></i>
+                    </div>
+                    <div class="ticket-text">
+                        <h3>Need Help?</h3>
+                        <p>Create a support ticket and get help from our experts</p>
+                    </div>
+                </div>
+                <button class="mobile-create-btn" id="createTicketBtnEl">
+                    <i class="bi bi-plus"></i>
+                    Create Ticket
+                </button>
+            </div>
+            
+            <!-- Mobile App Style Tickets List -->
+            <div class="mobile-tickets-section">
+                <div class="section-header">
+                    <div class="header-left">
+                        <i class="bi bi-ticket-detailed"></i>
+                        <h3>My Tickets</h3>
+                    </div>
+                    <button class="mobile-refresh-btn" id="refreshTicketsBtnEl">
+                        <i class="bi bi-arrow-clockwise"></i>
+                    </button>
+                </div>
+                
+                <div id="supportTicketsListEl" class="tickets-container">
+                    <!-- Tickets will be loaded here -->
+                </div>
+                
+                <div id="noTicketsMessageEl" class="mobile-empty-state" style="display: none;">
+                    <div class="empty-icon">
+                        <i class="bi bi-chat-dots"></i>
+                    </div>
+                    <h4>No tickets yet</h4>
+                    <p>Create your first support ticket to get started!</p>
+                    <button class="mobile-empty-btn" id="createFirstTicketBtnEl">
+                        <i class="bi bi-plus"></i>
+                        Create First Ticket
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- My Contests Section -->
+        <section id="my-contests-section" class="section">
+            <!-- Tournament Style Tabs -->
+            <div class="tournament-tabs">
+                <button class="tab-item active" data-status="upcoming">
+                    <i class="bi bi-calendar-event-fill"></i> Upcoming
+                </button>
+                <button class="tab-item" data-status="ongoing">
+                    <i class="bi bi-play-circle-fill"></i> Ongoing
+                </button>
+                <button class="tab-item" data-status="completed">
+                    <i class="bi bi-trophy-fill"></i> Results
+                </button>
+            </div>
+
+            <!-- Contests Container -->
+            <div class="contests-container">
+                <div id="myContestsPageListEl" class="contests-grid">
+                    <!-- Enhanced Placeholder Contest Card -->
+                    <div class="contest-card placeholder-glow">
+                        <div class="contest-header">
+                            <div class="contest-title-section">
+                                <div class="placeholder" style="height: 20px; width: 60%; border-radius: 8px;"></div>
+                                <div class="placeholder" style="height: 16px; width: 40%; border-radius: 6px; margin-top: 8px;"></div>
+                            </div>
+                            <div class="placeholder" style="height: 32px; width: 80px; border-radius: 16px;"></div>
+                        </div>
+                        <div class="contest-content">
+                            <div class="contest-info">
+                                <div class="placeholder" style="height: 16px; width: 100%; border-radius: 4px; margin-bottom: 8px;"></div>
+                                <div class="placeholder" style="height: 16px; width: 80%; border-radius: 4px; margin-bottom: 8px;"></div>
+                                <div class="placeholder" style="height: 16px; width: 90%; border-radius: 4px;"></div>
+                            </div>
+                            <div class="contest-prize">
+                                <div class="placeholder" style="height: 24px; width: 70%; border-radius: 6px; margin-bottom: 8px;"></div>
+                                <div class="placeholder" style="height: 14px; width: 50%; border-radius: 4px;"></div>
+                            </div>
+                        </div>
+                        <div class="contest-actions">
+                            <div class="placeholder" style="height: 40px; width: 100%; border-radius: 8px;"></div>
+                        </div>
+                    </div>
+                </div>
+                <p id="noMyContestsPageMessageEl" class="no-contests-message" style="display: none;">
+                    <i class="bi bi-emoji-frown"></i>
+                    <span>No contests found in this category.</span>
+                    <small>Join some tournaments to see them here!</small>
+                </p>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Modals -->
+    <div class="modal fade" id="policyModalEl" tabindex="-1">
+        <div class="modal-dialog modal-dialog-scrollable modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="policyModalTitleEl">Details</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="policyModalBodyEl" style="min-height: 300px;"></div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="addAmountModalEl" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="bi bi-wallet-fill me-2"></i> Add Money</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Step 1: Amount Input -->
+                    <div id="depositStep1">
+                        <h6 class="mb-3 text-light fw-bold">Step 1: Enter Amount</h6>
+                        <div class="mb-3">
+                            <label for="depositAmountInputEl" class="form-label text-light fw-bold">Amount (₹)</label>
+                            <input type="number" class="form-control" id="depositAmountInputEl" placeholder="Enter amount" min="1" required>
+                        </div>
+                        <div class="mb-3">
+                            <p class="small text-secondary">Pay via UPI/PhonePe to:</p>
+                            <p class="text-center text-warning"><strong>UPI ID/Number:</strong> <span class="phonepe-number" id="upiIdDisplayStep1">YOUR_UPI_ID_HERE</span></p>
+                            
+                            <!-- QR Code Display -->
+                            <div id="qrCodeDisplayContainer" class="text-center mt-3" style="display: none;">
+                                <p class="small text-secondary mb-2">Or scan QR code:</p>
+                                <img id="qrCodeDisplayImg" class="img-fluid rounded" style="max-height: 150px; max-width: 150px; border: 2px solid var(--border-color);">
+                                
+                                <!-- QR Code Actions -->
+                                <div class="qr-code-actions mt-2">
+                                    <button type="button" class="btn btn-sm btn-outline-primary me-2" id="openQrFullscreenBtn" title="Open in Full Screen">
+                                        <i class="bi bi-arrows-fullscreen me-1"></i>Full Screen
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-success" id="saveQrCodeBtn" title="Save QR Code">
+                                        <i class="bi bi-download me-1"></i>Save
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button type="button" class="btn btn-primary fw-bold" id="proceedToPaymentBtnEl">
+                                <i class="bi bi-credit-card me-2"></i>Proceed to Payment
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Payment Instructions -->
+                    <div id="depositStep2" style="display: none;">
+                        <h6 class="mb-3 text-light fw-bold">Step 2: Complete Payment</h6>
+                        <div class="alert alert-warning">
+                            <i class="bi bi-exclamation-triangle me-2"></i>
+                            <strong class="text-dark">Payment Instructions:</strong>
+                            <ol class="mt-2 mb-0 text-dark">
+                                <li>Copy the UPI ID below or use any UPI app</li>
+                                <li>Pay ₹<span id="paymentAmountEl" class="fw-bold text-danger">0</span> to the UPI ID shown</li>
+                                <li>Take a screenshot of the successful payment</li>
+                                <li>Click "Payment Done" and upload the screenshot</li>
+                            </ol>
+                        </div>
+                        
+                        <!-- UPI ID Display with Copy Button -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold text-light">UPI ID to Pay:</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control bg-light text-dark fw-bold" id="upiIdDisplayEl" value="YOUR_UPI_ID_HERE" readonly>
+                                <button class="btn btn-warning" type="button" id="copyUpiIdBtnEl" title="Copy UPI ID">
+                                    <i class="bi bi-clipboard"></i>
+                                </button>
+                            </div>
+                            <small class="text-light">You can copy this UPI ID and pay from any phone</small>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="button" class="btn btn-success fw-bold" id="paymentDoneBtnEl">
+                                <i class="bi bi-check-circle me-2"></i>Payment Done
+                            </button>
+                            <button type="button" class="btn btn-secondary fw-bold" id="backToStep1BtnEl">
+                                <i class="bi bi-arrow-left me-2"></i>Back
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Upload Screenshot -->
+                    <div id="depositStep3" style="display: none;">
+                        <h6 class="mb-3 text-light fw-bold">Step 3: Upload Payment Screenshot</h6>
+                        <div class="mb-3">
+                            <label for="paymentScreenshotInputEl" class="form-label text-light fw-bold">Payment Screenshot</label>
+                            <input type="file" class="form-control" id="paymentScreenshotInputEl" accept="image/*" required>
+                                                          <div class="form-text text-light">Upload a clear screenshot of your payment transaction</div>
+                        </div>
+                        <div id="screenshotPreviewEl" class="mb-3" style="display: none;">
+                            <img id="screenshotPreviewImgEl" class="img-fluid rounded" style="max-height: 200px;">
+                        </div>
+                        <div id="depositStatusMessageEl" class="alert mt-3" style="display: none;"></div>
+                        <div class="d-grid gap-2">
+                            <button type="button" class="btn btn-primary fw-bold" id="submitDepositBtnEl">
+                                <i class="bi bi-upload me-2"></i>Submit Deposit Request
+                            </button>
+                            <button type="button" class="btn btn-secondary fw-bold" id="backToStep2BtnEl">
+                                <i class="bi bi-arrow-left me-2"></i>Back
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary fw-bold" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- QR Code Fullscreen Modal -->
+    <div class="modal fade" id="qrCodeFullscreenModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-qr-code me-2"></i>QR Code - Full Screen
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <img id="qrCodeFullscreenImg" class="img-fluid" style="max-width: 100%; max-height: 70vh;">
+                    <div class="mt-3">
+                        <p class="text-muted mb-2">Scan this QR code with any UPI app to make payment</p>
+                        <button type="button" class="btn btn-success" id="saveQrCodeFullscreenBtn">
+                            <i class="bi bi-download me-2"></i>Save QR Code
+                        </button>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal fade" id="withdrawModalEl" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="bi bi-cash-coin me-2"></i> Withdraw Funds</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="small text-secondary">Withdrawable balance: <strong class="text-light" id="withdrawModalBalanceEl">₹0.00</strong></p>
+                    <div class="mb-3">
+                        <label for="withdrawAmountInputEl" class="form-label">Amount (Min ₹<span id="minWithdrawAmountEl">50</span>)</label>
+                        <input type="number" class="form-control" id="withdrawAmountInputEl" placeholder="Enter amount">
+                        <div class="form-text" id="withdrawLimitsHelp"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Withdrawal Method</label>
+                        <div id="withdrawMethodsContainer"></div>
+                        <input type="text" class="form-control mt-2" id="withdrawMethodInputEl" placeholder="Enter details">
+                    </div>
+                    <div id="withdrawStatusMessageEl" class="alert mt-3" style="display: none;"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-custom btn-custom-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-custom btn-custom-primary" id="submitWithdrawRequestBtnEl">Submit Request</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="matchDetailsModalEl" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="matchDetailsModalTitleEl">Match Details</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="matchDetailsModalBodyEl"></div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="idPasswordModalEl" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Room ID & Password</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <p class="small text-secondary">ID/Pass shown shortly before match start.</p>
+                    <div class="my-3 p-3" style="background: var(--primary-bg); border-radius: 8px;">
+                        <p class="mb-1">Room ID:</p>
+                        <h4 id="roomIdDisplayEl" class="text-accent referral-code placeholder-glow d-inline-block"><span class="placeholder col-6"></span></h4>
+                        <button class="btn btn-sm btn-outline-warning ms-2 copy-btn" data-target="#roomIdDisplayEl" title="Copy Room ID"><i class="bi bi-clipboard"></i></button>
+                    </div>
+                    <div class="my-3 p-3" style="background: var(--primary-bg); border-radius: 8px;">
+                        <p class="mb-1">Password:</p>
+                        <h4 id="roomPasswordDisplayEl" class="text-accent referral-code placeholder-glow d-inline-block"><span class="placeholder col-6"></span></h4>
+                        <button class="btn btn-sm btn-outline-warning ms-2 copy-btn" data-target="#roomPasswordDisplayEl" title="Copy Password"><i class="bi bi-clipboard"></i></button>
+                    </div>
+                    <p class="small text-warning"><i class="bi bi-exclamation-triangle"></i> Don't share ID/Password.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Tournament Results Modal -->
+    <div class="modal fade" id="tournamentResultsModalEl" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="tournamentResultsModalTitleEl">Tournament Results</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="tournamentResultsContentEl">
+                        <div class="text-center p-4">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-2 text-secondary">Loading tournament results...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- *** MODIFIED: In-Game Name Modal *** -->
+    <div class="modal fade" id="inGameNameModalEl" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="inGameNameModalTitleEl">Confirm Your In-Game Details</h5>
+                </div>
+                <div class="modal-body">
+                    <p class="small text-secondary" id="inGameNameModalDescriptionEl">Please provide your details for the tournament.</p>
+                    <form id="inGameNameFormEl">
+                        <input type="hidden" id="inGameNameTournamentIdInputEl">
+                        <input type="hidden" id="tournamentModeInputEl">
+                        
+                        <!-- Solo Mode Fields -->
+                        <div id="soloFields">
+                            <div class="mb-3">
+                                <label for="inGameNameInputEl" class="form-label">In-Game Name (IGN)</label>
+                                <input type="text" class="form-control" id="inGameNameInputEl" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="inGameUidInputEl" class="form-label">In-Game UID / ID</label>
+                                <input type="text" class="form-control" id="inGameUidInputEl" required>
+                            </div>
+                        </div>
+                        
+                        <!-- Duo Mode Fields -->
+                        <div id="duoFields" style="display: none;">
+                            <h6 class="text-primary mb-3">Player 1 (You)</h6>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="duoPlayer1NameInputEl" class="form-label">In-Game Name</label>
+                                    <input type="text" class="form-control" id="duoPlayer1NameInputEl" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="duoPlayer1UidInputEl" class="form-label">In-Game UID</label>
+                                    <input type="text" class="form-control" id="duoPlayer1UidInputEl" required>
+                                </div>
+                            </div>
+                            <h6 class="text-success mb-3">Player 2 (Teammate)</h6>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="duoPlayer2NameInputEl" class="form-label">In-Game Name</label>
+                                    <input type="text" class="form-control" id="duoPlayer2NameInputEl" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="duoPlayer2UidInputEl" class="form-label">In-Game UID</label>
+                                    <input type="text" class="form-control" id="duoPlayer2UidInputEl" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Squad Mode Fields -->
+                        <div id="squadFields" style="display: none;">
+                            <h6 class="text-primary mb-3">Player 1 (You)</h6>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="squadPlayer1NameInputEl" class="form-label">In-Game Name</label>
+                                    <input type="text" class="form-control" id="squadPlayer1NameInputEl" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="squadPlayer1UidInputEl" class="form-label">In-Game UID</label>
+                                    <input type="text" class="form-control" id="squadPlayer1UidInputEl" required>
+                                </div>
+                            </div>
+                            <h6 class="text-success mb-3">Player 2</h6>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="squadPlayer2NameInputEl" class="form-label">In-Game Name</label>
+                                    <input type="text" class="form-control" id="squadPlayer2NameInputEl" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="squadPlayer2UidInputEl" class="form-label">In-Game UID</label>
+                                    <input type="text" class="form-control" id="squadPlayer2UidInputEl" required>
+                                </div>
+                            </div>
+                            <h6 class="text-warning mb-3">Player 3</h6>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="squadPlayer3NameInputEl" class="form-label">In-Game Name</label>
+                                    <input type="text" class="form-control" id="squadPlayer3NameInputEl" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="squadPlayer3UidInputEl" class="form-label">In-Game UID</label>
+                                    <input type="text" class="form-control" id="squadPlayer3UidInputEl" required>
+                                </div>
+                            </div>
+                            <h6 class="text-info mb-3">Player 4</h6>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="squadPlayer4NameInputEl" class="form-label">In-Game Name</label>
+                                    <input type="text" class="form-control" id="squadPlayer4NameInputEl" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="squadPlayer4UidInputEl" class="form-label">In-Game UID</label>
+                                    <input type="text" class="form-control" id="squadPlayer4UidInputEl" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="inGameNameStatusMessageEl" class="alert" style="display: none;"></div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-custom btn-custom-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-custom btn-custom-primary" id="saveInGameNameBtnEl">Confirm & Join</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div class="modal fade" id="editProfileModalEl" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Profile</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editProfileFormEl">
+                        <div class="text-center mb-3">
+                            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iOTAiIGhlaWdodD0iOTAiIHZpZXdCb3g9IjAgMCA5MCA5MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iNDUiIGN5PSI0NSIgcj0iNDUiIGZpbGw9IiMzMDM2M0QiLz4KPHN2ZyB4PSIyNSIgeT0iMjUiIHdpZHRoPSI0MCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjOEE5NDlFIj4KPHBhdGggZD0iTTEyIDEyYzIuMjEgMCA0LTEuNzkgNC00cy0xLjc5LTQtNC00LTQgMS43OS00IDQgMS43OSA0IDQgNHptMCAyYy0yLjY3IDAtOCAxLjM0LTggNHYyaDE2di0yYzAtMi42Ni01LjMzLTQtOC00eiIvPgo8L3N2Zz4KPC9zdmc+" alt="Avatar Preview" class="profile-avatar" id="editProfileAvatarPreviewEl" style="width: 90px; height: 90px;">
+                        </div>
+                        <div class="mb-3">
+                            <label for="editProfilePhotoInputEl" class="form-label">Change Profile Photo</label>
+                            <input type="file" class="form-control" id="editProfilePhotoInputEl" accept="image/*">
+                            <div class="form-text">Uploading a new photo will replace the old one.</div>
+                            <div class="imgbb-upload-status mt-2"></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="editProfileFirstNameInputEl" class="form-label">First Name</label>
+                                <input type="text" class="form-control" id="editProfileFirstNameInputEl" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="editProfileLastNameInputEl" class="form-label">Last Name</label>
+                                <input type="text" class="form-control" id="editProfileLastNameInputEl" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editProfileUsernameInputEl" class="form-label">Username</label>
+                            <input type="text" class="form-control" id="editProfileUsernameInputEl" required>
+                            <small class="text-muted">This is your unique identifier</small>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editProfileDisplayNameInputEl" class="form-label">Display Name</label>
+                            <input type="text" class="form-control" id="editProfileDisplayNameInputEl" required>
+                        </div>
+                        <div id="editProfileStatusMessageEl" class="alert" style="display: none;"></div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-custom btn-custom-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-custom btn-custom-primary" id="saveProfileBtnEl">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Support Ticket Modal -->
+    <div class="modal fade" id="createTicketModalEl" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-headset me-2"></i>
+                        Create Support Ticket
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="createTicketFormEl">
+                        <div class="mb-3">
+                            <label for="ticketSubjectInputEl" class="form-label">Subject</label>
+                            <input type="text" class="form-control" id="ticketSubjectInputEl" placeholder="Brief description of your issue" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="ticketCategoryInputEl" class="form-label">Category</label>
+                            <select class="form-control" id="ticketCategoryInputEl" required>
+                                <option value="">Select a category</option>
+                                <option value="technical">Technical Issue</option>
+                                <option value="payment">Payment Problem</option>
+                                <option value="tournament">Tournament Related</option>
+                                <option value="account">Account Issue</option>
+                                <option value="general">General Inquiry</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="ticketPriorityInputEl" class="form-label">Priority</label>
+                            <select class="form-control" id="ticketPriorityInputEl" required>
+                                <option value="low">Low</option>
+                                <option value="medium" selected>Medium</option>
+                                <option value="high">High</option>
+                                <option value="urgent">Urgent</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="ticketDescriptionInputEl" class="form-label">Description</label>
+                            <textarea class="form-control" id="ticketDescriptionInputEl" rows="4" placeholder="Please provide detailed information about your issue..." required></textarea>
+                        </div>
+                        <div id="createTicketStatusMessageEl" class="alert" style="display: none;"></div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-custom btn-custom-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-custom btn-custom-primary" id="submitTicketBtnEl">Create Ticket</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Support Chat Modal -->
+    <div class="modal fade" id="supportChatModalEl" tabindex="-1" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-chat-dots me-2"></i>
+                        Support Chat - <span id="chatTicketSubjectEl">Ticket Subject</span>
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Ticket Info -->
+                    <div class="ticket-info mb-3 p-3" style="background: var(--primary-bg); border-radius: 8px; border: 1px solid var(--border-color);">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <small class="text-secondary">Ticket ID: <span id="chatTicketIdEl" class="text-accent"></span></small>
+                            </div>
+                            <div class="col-md-6 text-end">
+                                <span class="badge" id="chatTicketStatusEl">Status</span>
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-md-6">
+                                <small class="text-secondary">Category: <span id="chatTicketCategoryEl"></span></small>
+                            </div>
+                            <div class="col-md-6 text-end">
+                                <small class="text-secondary">Priority: <span id="chatTicketPriorityEl"></span></small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Chat Messages -->
+                    <div class="chat-container" style="height: 400px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 8px; padding: 15px; background: var(--primary-bg);">
+                        <div id="chatMessagesEl">
+                            <!-- Messages will be populated here -->
+                        </div>
+                    </div>
+
+                    <!-- Chat Input -->
+                    <div class="chat-input mt-3">
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="chatMessageInputEl" placeholder="Type your message..." maxlength="500">
+                            <button class="btn btn-custom btn-custom-primary" type="button" id="sendChatMessageBtnEl">
+                                <i class="bi bi-send"></i>
+                            </button>
+                        </div>
+                        <small class="text-secondary">Press Enter to send</small>
+                    </div>
+
+                    <!-- Ticket Actions -->
+                    <div class="ticket-actions mt-3 text-end">
+                        <button class="btn btn-sm btn-custom btn-custom-success" id="resolveTicketBtnEl" style="display: none;">
+                            <i class="bi bi-check-circle me-2"></i>Resolve Ticket
+                        </button>
+                        <button class="btn btn-sm btn-custom btn-custom-secondary" id="closeTicketBtnEl">
+                            <i class="bi bi-x-circle me-2"></i>Close Chat
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <!-- Deposit History Modal -->
+    <div class="modal fade" id="depositHistoryModalEl" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-clock-history me-2"></i>
+                        Deposit History
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="deposit-history-container">
+                        <div class="deposit-history-filters mb-3">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for="depositStatusFilter" class="form-label">Filter by Status</label>
+                                    <select class="form-select" id="depositStatusFilter">
+                                        <option value="all">All Status</option>
+                                        <option value="pending">Pending</option>
+                                        <option value="approved">Approved</option>
+                                        <option value="rejected">Rejected</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="depositDateFilter" class="form-label">Filter by Date</label>
+                                    <select class="form-select" id="depositDateFilter">
+                                        <option value="all">All Time</option>
+                                        <option value="today">Today</option>
+                                        <option value="week">This Week</option>
+                                        <option value="month">This Month</option>
+                                        <option value="year">This Year</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="deposit-history-content">
+                            <div id="depositHistoryListEl" class="deposit-history-list">
+                                <!-- Deposit history items will be loaded here -->
+                            </div>
+                            
+                            <div id="depositHistoryEmptyEl" class="empty-deposits" style="display: none;">
+                                <div class="empty-icon">
+                                    <i class="bi bi-receipt"></i>
+                                </div>
+                                <h4 class="empty-title">No Deposits Found</h4>
+                                <p class="empty-subtitle">Your deposit history will appear here</p>
+                            </div>
+                            
+                            <div id="depositHistoryLoadingEl" class="deposit-history-loading">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <p class="mt-2">Loading deposit history...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Challenge Modal -->
+    <div class="modal fade" id="createChallengeModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-sword me-2"></i>
+                        Create New Challenge
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="createChallengeForm">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label for="challengeGame" class="form-label">Select Game</label>
+                                <select class="form-select" id="challengeGame" required>
+                                    <option value="">Choose a game...</option>
+                                    <!-- Games will be loaded here -->
+                                </select>
+                                <small class="text-muted">Only games with challenge mode enabled are shown</small>
+                            </div>
+                            
+                            <div class="col-12">
+                                <label for="challengeName" class="form-label">Challenge Name</label>
+                                <input type="text" class="form-control" id="challengeName" required placeholder="Enter challenge name">
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="challengeEntryFee" class="form-label">Entry Fee (₹)</label>
+                                <input type="number" class="form-control" id="challengeEntryFee" required min="50" step="10" value="50">
+                                <small class="text-muted">Minimum: ₹<span id="minEntryFeeDisplay">50</span></small>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="challengePrizePool" class="form-label">Prize Pool (₹)</label>
+                                <input type="text" class="form-control" id="challengePrizePool" readonly>
+                                <small class="text-muted">Auto-calculated</small>
+                            </div>
+                            
+                            <!-- Wallet Balance Check -->
+                            <div class="col-12">
+                                <div id="walletBalanceCheck" class="balance-warning" style="display: none;">
+                                    <div class="warning-icon">
+                                        <i class="bi bi-exclamation-triangle"></i>
+                                    </div>
+                                    <div class="warning-text">
+                                        <strong>Wallet Balance Check</strong>
+                                        <div class="balance-info">
+                                            Available: ₹<span id="availableBalanceDisplay">0</span> | 
+                                            Required: ₹<span id="requiredBalanceDisplay">0</span> | 
+                                            Shortfall: ₹<span id="balanceShortfallDisplay">0</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div id="walletBalanceSufficient" class="alert alert-success" style="display: none;">
+                                    <i class="bi bi-check-circle"></i>
+                                    <strong>Sufficient Balance:</strong> You have enough funds to create this challenge.
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="challengeInGameName" class="form-label">In-Game Name</label>
+                                <input type="text" class="form-control" id="challengeInGameName" required placeholder="Your in-game username">
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="challengeUID" class="form-label">In-Game UID</label>
+                                <input type="text" class="form-control" id="challengeUID" required placeholder="Your in-game UID">
+                            </div>
+                            
+                            <div class="col-12">
+                                <div class="alert alert-info">
+                                    <strong>Challenge Rules:</strong><br>
+                                    • Entry fee will be deducted from your wallet<br>
+                                    • Opponent must pay the same entry fee<br>
+                                    • Winner takes the prize pool<br>
+                                    • Platform takes commission<br>
+                                    • Both players must submit results after the match
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="challengeStatus" class="mt-3"></div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="createChallengeSubmitBtn">
+                        <i class="bi bi-sword"></i> Create Challenge
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Details Entry Modal -->
+    <div class="modal fade" id="gameDetailsModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-controller me-2"></i>
+                        Enter Game Details
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="gameDetailsForm">
+                        <input type="hidden" id="gameDetailsChallengeId">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="gameRoomId" class="form-label">Room ID</label>
+                                <input type="text" class="form-control" id="gameRoomId" required placeholder="Enter room ID">
+                                <small class="text-muted">This will be shared with your opponent</small>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="gamePassword" class="form-label">Room Password</label>
+                                <input type="text" class="form-control" id="gamePassword" required placeholder="Enter room password">
+                                <small class="text-muted">This will be shared with your opponent</small>
+                            </div>
+                            
+                            <div class="col-12">
+                                <label for="gameInstructions" class="form-label">Additional Instructions (Optional)</label>
+                                <textarea class="form-control" id="gameInstructions" rows="3" placeholder="Any special rules or instructions for the match..."></textarea>
+                            </div>
+                            
+                            <div class="col-12">
+                                <div class="alert alert-info">
+                                    <strong>Important:</strong><br>
+                                    • Room ID and password will be visible to your opponent<br>
+                                    • Make sure you're ready to play before entering details<br>
+                                    • Both players must join the same room to start the match
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="gameDetailsStatus" class="mt-3"></div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="saveGameDetailsBtn">
+                        <i class="bi bi-controller"></i> Save Game Details
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Result Submission Modal -->
+    <div class="modal fade" id="resultSubmissionModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-flag me-2"></i>
+                        Submit Match Result
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Offline Mode Indicator -->
+                    <div id="offlineIndicator" class="alert alert-warning" style="display: none;">
+                        <i class="bi bi-wifi-off me-2"></i>
+                        <strong>Offline Mode:</strong> Results will be stored locally until connection is restored.
+                    </div>
+                    
+                    <form id="resultSubmissionForm">
+                        <input type="hidden" id="resultChallengeId">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="matchResult" class="form-label">Match Result</label>
+                                <select class="form-select" id="matchResult" required>
+                                    <option value="">Select result...</option>
+                                    <option value="win">Win</option>
+                                    <option value="lose">Lose</option>
+                                    <option value="other">Other (Disconnect, Unfair, etc.)</option>
+                                </select>
+                                <small class="text-muted">Be honest about your result</small>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="matchDuration" class="form-label">Match Duration (minutes)</label>
+                                <input type="number" class="form-control" id="matchDuration" min="1" max="180" placeholder="How long did the match last?">
+                            </div>
+                            
+                            <div class="col-12">
+                                <label for="resultDescription" class="form-label">Match Description</label>
+                                <textarea class="form-control" id="resultDescription" rows="3" placeholder="Brief description of how the match went..."></textarea>
+                            </div>
+                            
+                            <div class="col-12">
+                                <label for="screenshotProof" class="form-label">Screenshot Proof (Required)</label>
+                                <input type="file" class="form-control" id="screenshotProof" accept="image/*" required>
+                                <small class="text-muted">Upload a screenshot showing the match result (PNG, JPG, WebP)</small>
+                                <div id="screenshotPreview" class="mt-2"></div>
+                            </div>
+                            
+                            <div class="col-12">
+                                <label for="videoProof" class="form-label">Video Proof Link (Optional)</label>
+                                <input type="url" class="form-control" id="videoProof" placeholder="YouTube, Google Drive, Dropbox, Streamable, Mega.nz link">
+                                <small class="text-muted">Required if reporting cheating/hacking. Supported platforms: YouTube, Google Drive, Dropbox, Streamable, Mega.nz</small>
+                            </div>
+                            
+                            <div class="col-12">
+                                <div class="alert alert-warning">
+                                    <strong>Result Submission Rules:</strong><br>
+                                    • Screenshot proof is mandatory for all submissions<br>
+                                    • Video proof is required for cheating/hacking reports<br>
+                                    • Both players must submit results within 1 hour<br>
+                                    • Be honest - false reports may result in account suspension
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="resultSubmissionStatus" class="mt-3"></div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="submitResultBtn">
+                        <i class="bi bi-flag"></i> Submit Result
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <button class="nav-item active" data-section="home-section"><i class="bi bi-house-door-fill"></i><span>Home</span></button>
+        <button class="nav-item" data-section="challenges-section">
+            <div class="challenge-nav-icon">
+                <svg width="20" height="20" viewBox="0 0 35 35" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="35" height="35" rx="17.5" fill="#1E293B"/>
+                    <path d="M10 12L17.5 8L25 12V20L17.5 24L10 20V12Z" fill="#94A3B8"/>
+                    <path d="M17.5 8L17.5 24" stroke="#E2E8F0" stroke-width="1.5"/>
+                    <path d="M10 12L25 12" stroke="#E2E8F0" stroke-width="1.5"/>
+                    <path d="M10 20L25 20" stroke="#E2E8F0" stroke-width="1.5"/>
+                    <circle cx="17.5" cy="16" r="2" fill="#F59E0B"/>
+                    <path d="M15 14L20 18M20 14L15 18" stroke="#1E293B" stroke-width="1" stroke-linecap="round"/>
+                </svg>
+            </div>
+            <span>Challenges</span>
+        </button>
+        <button class="nav-item" data-section="my-contests-section"><i class="bi bi-trophy-fill"></i><span>My Contests</span></button>
+        <button class="nav-item" data-section="leaderboard-section"><i class="bi bi-award"></i><span>Leaderboard</span></button>
+        <button class="nav-item" data-section="support-section"><i class="bi bi-headset"></i><span>Support</span></button>
+        <button class="nav-item" data-section="profile-section"><i class="bi bi-person-fill"></i><span>Profile</span></button>
+    </nav>
+
+    <!-- JS Libraries -->
+    
+    
+
+    <!-- Firebase SDK & App Logic -->
+    
+
+
+
+<!-- Code injected by live-server -->
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+
+<!-- Firebase Config -->
+<script src="firebase-config.js"></script>
+
+<!-- App Configuration -->
+<script src="config.js"></script>
+
+<!-- Debug Helper -->
+<script src="debug.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script src="announcements.js"></script>
+<script src="challenges.js"></script>
+<script src="index.js" type="module"></script>
+
+<!-- Initialize Result Submission -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded, setting up event listeners...');
+    
+    // Check online/offline status
+    function updateOfflineIndicator() {
+        const offlineIndicator = document.getElementById('offlineIndicator');
+        if (offlineIndicator) {
+            if (navigator.onLine) {
+                offlineIndicator.style.display = 'none';
+            } else {
+                offlineIndicator.style.display = 'block';
+            }
+        }
+    }
+    
+    // Listen for online/offline events
+    window.addEventListener('online', updateOfflineIndicator);
+    window.addEventListener('offline', updateOfflineIndicator);
+    
+    // Initial check
+    updateOfflineIndicator();
+    
+    // Add event listener for submit result button
+    const submitResultBtn = document.getElementById('submitResultBtn');
+    console.log('Submit button found:', submitResultBtn);
+    
+    if (submitResultBtn) {
+        submitResultBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('Submit Result button clicked!');
+            console.log('Event:', e);
+            
+            if (window.challengeSystem) {
+                console.log('Challenge system available, calling submitResultForm...');
+                window.challengeSystem.submitResultForm();
+            } else {
+                console.error('Challenge system not available');
+                alert('Challenge system not available. Please refresh the page.');
+            }
+        });
+        console.log('Event listener added to submit button');
+    } else {
+        console.error('Submit button not found!');
+    }
+    
+    // Add event listener for screenshot preview
+    const screenshotInput = document.getElementById('screenshotProof');
+    if (screenshotInput) {
+        screenshotInput.addEventListener('change', function(event) {
+            if (window.challengeSystem) {
+                window.challengeSystem.handleScreenshotPreview(event);
+            }
+        });
+    }
+    
+    console.log('Event listeners setup complete');
+});
+</script>
+</body>
+</html>

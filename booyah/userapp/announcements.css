@@ -1,0 +1,144 @@
+/* Announcements Section Styles for User App */
+.announcements-container {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 20px 0;
+    margin-bottom: 20px;
+    border-radius: 0 0 15px 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.announcements-header h5 {
+    color: white;
+    margin: 0;
+    font-weight: 600;
+}
+
+.announcements-header .btn {
+    color: white;
+    border-color: rgba(255,255,255,0.3);
+    background: transparent;
+}
+
+.announcements-header .btn:hover {
+    background: rgba(255,255,255,0.1);
+    border-color: rgba(255,255,255,0.5);
+}
+
+.announcements-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.announcement-item {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 10px;
+    padding: 15px;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.announcement-item:hover {
+    background: rgba(255,255,255,0.15);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+}
+
+.announcement-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: white;
+}
+
+.announcement-item.info::before {
+    background: #17a2b8;
+}
+
+.announcement-item.warning::before {
+    background: #ffc107;
+}
+
+.announcement-item.success::before {
+    background: #28a745;
+}
+
+.announcement-item.danger::before {
+    background: #dc3545;
+}
+
+.announcement-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: white;
+    margin: 0 0 10px 0;
+    line-height: 1.3;
+}
+
+.announcement-content {
+    color: rgba(255,255,255,0.9);
+    line-height: 1.6;
+    margin-bottom: 12px;
+}
+
+.announcement-meta {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.announcement-type {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    background: rgba(255,255,255,0.2);
+    color: white;
+}
+
+.announcement-priority {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    background: rgba(255,255,255,0.2);
+    color: white;
+}
+
+.announcement-date {
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.7);
+    margin-left: auto;
+}
+
+/* Responsive adjustments for announcements */
+@media (max-width: 768px) {
+    .announcements-container {
+        padding: 15px 0;
+        margin-bottom: 15px;
+    }
+    
+    .announcement-item {
+        padding: 12px;
+    }
+    
+    .announcement-meta {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
+    .announcement-date {
+        margin-left: 0;
+    }
+}
